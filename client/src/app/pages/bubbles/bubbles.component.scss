@@ -1,0 +1,38 @@
+#container {
+  height: 100vh;
+  position: relative;
+  width: 100vw;
+
+  #visContainer {
+    display: flex;
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+    #vis {
+      height: 100%;
+      position: relative;
+      width: 100%;
+    }
+
+    #control_z {
+      align-items: center;
+      bottom: 50px;
+      display: flex;
+      flex-flow: column nowrap;
+      position: absolute;
+      right: 50px;
+
+      #zSlider {
+        display: flex;
+        justify-content: center;
+        position: relative;
+      }
+
+      #zReport {
+        position: relative
+      }
+
+    }
+  }
+}

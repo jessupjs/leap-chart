@@ -1,0 +1,10 @@
+<div id="container">
+  <div id="visContainer">
+    <div id="vis" #vis></div>
+    <div id="control_z">
+      <input id="zSlider" #zSlider type="range" step="1" min="2008" max="2018" value="2018"
+             (change)="updateZ()">
+      <a id="zReport" [innerText]="sels.z"></a>
+    </div>
+  </div>
+</div>
