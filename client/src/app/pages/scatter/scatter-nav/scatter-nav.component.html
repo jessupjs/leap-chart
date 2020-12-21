@@ -1,0 +1,7 @@
+<div id="container">
+  <div id="block">
+    <a *ngFor="let vK of viewsKeys"
+         [ngClass]="vK === selected ? 'view viewNow' : 'view viewLater'">
+    </a>
+  </div>
+</div>
