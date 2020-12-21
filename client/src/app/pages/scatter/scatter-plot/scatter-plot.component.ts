@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -11,6 +11,8 @@ export class ScatterPlotComponent implements OnInit {
   // Input, output
   @Input() data: [any];
   @Input() dataConfigs: any;
+  @Input() parent: any;
+  @Output() shareChild: EventEmitter<any> = new EventEmitter<any>();
 
   // HTML
   @ViewChild('target', {static: true}) target: ElementRef;
@@ -49,6 +51,9 @@ export class ScatterPlotComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    // Share child
+    this.shareChild.emit(this);
 
     // Init
     this.init();
@@ -129,7 +134,7 @@ export class ScatterPlotComponent implements OnInit {
     const bubbles = this.els.bubblesG.selectAll('.bubble')
       .data(vis.data, (d, i) => i)
       .join('circle')
-      .attr('class', 'bubble')
+      .attr('class', 'bubble');
     bubbles.transition()
       .attr('r', d => vis.tools.scR(d.r))
       .attr('cx', d => vis.tools.scX(d.x))
@@ -139,6 +144,9 @@ export class ScatterPlotComponent implements OnInit {
     // Update axes
     vis.els.axisX.call(vis.tools.axisX);
     vis.els.axisY.call(vis.tools.axisY);
+
+    // Add events
+    this.parent.addEvents();
 
   }
 

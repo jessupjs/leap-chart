@@ -2,5 +2,7 @@
   <app-scatter-plot
     [data]="data"
     [dataConfigs]="dataConfigs"
+    [parent]="this"
+    (shareChild)="setChild($event)"
   ></app-scatter-plot>
 </div>

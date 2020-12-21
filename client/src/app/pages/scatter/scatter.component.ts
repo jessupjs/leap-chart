@@ -25,7 +25,7 @@ export class ScatterComponent implements OnInit, AfterViewInit {
         copy: 'Lil Space Cowboy X\'s concert has attracted some of the galaxy\'s most sinister super-evil supreme ' +
           'leaders. We\'ve located the most dangerous, but need you to select the worst of the worst to follow into ' +
           'the far reaches of the unknown universe.',
-        title: 'Part 1. The lineup (select)',
+        title: 'Part 1. The lineup (hover & select)',
         instance: null,
         selected: false
       },

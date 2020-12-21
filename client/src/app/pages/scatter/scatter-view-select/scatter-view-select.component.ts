@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-scatter-view-select',
@@ -11,6 +12,8 @@ export class ScatterViewSelectComponent implements OnInit {
   @Input() components: any;
 
   // Class vars
+  child = null;
+  correctAnswer = 'Zurg';
   data = [
     {
       name: 'Zurg',
@@ -55,6 +58,51 @@ export class ScatterViewSelectComponent implements OnInit {
     this.components.views['select'].instance = this;
   }
 
+  /**
+   * addEvents
+   */
+  addEvents(): void {
+
+    // Click event
+    this.child.els.bubblesG.selectAll('.bubble')
+      .on('click', this.bubbleClick.bind(this));
+
+    // Gesture event
+
+  }
+
+  /**
+   * bubbleClick
+   */
+  bubbleClick(e: any, d: any) {
+
+    // Update color
+    d3.selectAll('.bubble')
+      .attr('fill', 'black');
+    d3.select(e.target)
+      .attr('fill', 'red');
+
+    // Check answer
+    this.checkAnswer(d.name)
+  }
+
+  /**
+   * checkAnswer
+   */
+  checkAnswer(name: string) {
+    if (name === this.correctAnswer) {
+      console.log('DING!');
+    } else {
+      console.log('WOMP!');
+    }
+  }
+
+  /**
+   *
+   */
+  setChild(e: any): void {
+    this.child = e;
+  }
 
 
 }
