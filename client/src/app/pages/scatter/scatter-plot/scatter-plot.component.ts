@@ -24,6 +24,7 @@ export class ScatterPlotComponent implements OnInit {
     axisY: null,
     bubblesG: null,
     g: null,
+    pointerCirc: null,
     svg: null,
   }
 
@@ -33,6 +34,7 @@ export class ScatterPlotComponent implements OnInit {
     gH: 0,
     gMargin: {top: 50, right: 100, bottom: 100, left: 50},
     gW: 0,
+    pointerCircR: 10,
     svgH: 0,
     svgW: 0
   }
@@ -91,7 +93,14 @@ export class ScatterPlotComponent implements OnInit {
     vis.els.axisY = vis.els.axesG.append('g')
       .style('transform', `translateX(${vis.configs.gW + vis.configs.axisPad}px)`);
 
-    // ..
+    // Add other interactive stuf
+    vis.els.pointerCirc = vis.els.g.append('circle')
+      .attr('r', vis.configs.pointerCircR)
+      .attr('fill', 'none')
+      .attr('stroke', 'rgba(0, 0, 0, 0.5)')
+      .style('visibility', 'visible');
+
+      // ..
     this.wrangle();
   }
 
