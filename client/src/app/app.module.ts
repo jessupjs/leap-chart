@@ -12,6 +12,7 @@ import { ScatterBoardComponent } from './pages/scatter/scatter-board/scatter-boa
 import { ScatterNotesComponent } from './pages/scatter/scatter-notes/scatter-notes.component';
 import { ScatterPlotComponent } from './pages/scatter/scatter-plot/scatter-plot.component';
 import { ScatterViewSelectComponent } from './pages/scatter/scatter-view-select/scatter-view-select.component';
+import { LeapMotionComponent } from './pages/scatter/leap-motion/leap-motion.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ScatterViewSelectComponent } from './pages/scatter/scatter-view-select/
     ScatterBoardComponent,
     ScatterNotesComponent,
     ScatterPlotComponent,
-    ScatterViewSelectComponent
+    ScatterViewSelectComponent,
+    LeapMotionComponent
   ],
   imports: [
     BrowserModule,
