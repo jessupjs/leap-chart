@@ -1,5 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
+import * as Leap from 'leapjs';
 
 @Component({
   selector: 'app-scatter-view-select',
@@ -10,6 +11,12 @@ export class ScatterViewSelectComponent implements OnInit {
 
   // Input, output
   @Input() components: any;
+
+  // HTML
+  @ViewChild('leap', {static: true}) leap: ElementRef;
+
+  // Class vars
+  frame = null;
 
   // Class vars
   child = null;
@@ -50,7 +57,8 @@ export class ScatterViewSelectComponent implements OnInit {
     unitR: 'Evilness'
   };
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
 
@@ -68,7 +76,10 @@ export class ScatterViewSelectComponent implements OnInit {
       .on('click', this.bubbleClick.bind(this));
 
     // Gesture event
-
+    const controller = Leap.loop({enableGestures:true}, frame => {
+      console.log(frame)
+      this.frame = frame;
+    });
   }
 
   /**

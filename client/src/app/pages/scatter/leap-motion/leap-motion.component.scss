@@ -1,0 +1,24 @@
+#container {
+  align-items: flex-end;
+  background-color: rgba(255, 32, 0, 0.75);
+  color: white;
+  display: flex;
+  flex-flow: row wrap;
+  font-family: sans-serif;
+  width: 800px;
+  padding: 10px;
+  position: absolute;
+  right: 50px;
+  top: -50px;
+  z-index: 100;
+
+  h1 {
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  p {
+    font-size: 11px;
+    font-weight: 100;
+  }
+}
