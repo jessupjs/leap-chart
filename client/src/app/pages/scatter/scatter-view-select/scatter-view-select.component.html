@@ -1,8 +1,14 @@
 <div id="container">
+
   <app-scatter-plot
     [data]="data"
     [dataConfigs]="dataConfigs"
     [parent]="this"
     (shareChild)="setChild($event)"
   ></app-scatter-plot>
+
+  <app-leap-motion
+    [frame]="frame"
+  ></app-leap-motion>
+
 </div>

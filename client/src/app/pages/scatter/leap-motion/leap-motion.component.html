@@ -1,0 +1,7 @@
+<div id="container">
+  <h1>Leap motion frame:&nbsp;</h1>
+  <p [innerHTML]="frame ? '&nbsp;frame id.' + frame.id : ''"></p>
+  <p [innerHTML]="frame ? '&nbsp;hands.' + frame.hands.length : ''"></p>
+  <p [innerHTML]="frame ? '&nbsp;fingers.' + frame.fingers.length : ''"></p>
+  <p [innerHTML]="frame ? '&nbsp;index finger pos.' + frame.fingers[1].stabilizedTipPosition : ''"></p>
+</div>
