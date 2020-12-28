@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import * as Leap from 'leapjs';
+import {LeapEventsService} from "../leap-events.service";
 
 @Component({
   selector: 'app-scatter-view-select',
@@ -43,7 +44,9 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
   }
 
-  constructor() {
+  constructor(
+    private leapEventsService: LeapEventsService
+  ) {
   }
 
   ngOnInit(): void {
@@ -132,7 +135,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         // Update frame
         vis.frame = frame;
 
-        // Get coords
+        // Get coords (index finger)
         const indexLeapX = frame.fingers[1].stabilizedTipPosition[0];
         const indexLeapY = frame.fingers[1].stabilizedTipPosition[1];
         const indexWindowX = vis.tools.scLeapX(indexLeapX);
