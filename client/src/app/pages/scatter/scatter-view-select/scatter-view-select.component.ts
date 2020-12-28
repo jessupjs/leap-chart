@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@a
 import * as d3 from 'd3';
 import * as Leap from 'leapjs';
 import {LeapEventsService} from "../leap-events.service";
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'app-scatter-view-select',
@@ -33,12 +34,12 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
     unitY: 'Row',
     unitR: 'Evilness'
   };
+  scalesetG: {};
   tools = {
-    scLeapX: d3.scaleLinear(),
-    scLeapY: d3.scaleLinear(),
-    scLeapZ: d3.scaleLinear(),
-    scVisgX: d3.scaleLinear(),
-    scVisgY: d3.scaleLinear(),
+    scLeapToWindowX: d3.scaleLinear(),
+    scLeapToWindowY: d3.scaleLinear(),
+    scWindowToContainerX: d3.scaleLinear(),
+    scWindowToContainerY: d3.scaleLinear(),
   }
 
   ngAfterViewInit() {
@@ -75,30 +76,50 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
     const ghDomain = this.child.tools.scY.domain();
     const gwSpace = Math.abs(gwDomain[0]) + Math.abs(gwDomain[1]);
     const ghSpace = Math.abs(ghDomain[0]) + Math.abs(ghDomain[1]);
-    const breaks = 5;
+    const grids = 10;
     const sections = []
-    for (let i = 0; i < breaks; i++) {
-      for (let j = 0; j < breaks; j++) {
+    for (let i = 0; i < grids; i++) {
+      for (let j = 0; j < grids; j++) {
         sections.push({
-          startX: gwDomain[0] + (i * gwSpace / breaks),
-          startY: ghDomain[0] + (j * ghSpace / breaks),
-          endX: gwDomain[0] + ((i + 1) * gwSpace / breaks - 1),
-          endY: ghDomain[0] + ((j + 1) * ghSpace / breaks - 1),
-          members: []
+          index: i + j,
+          startX: gwDomain[0] + (i * gwSpace / grids),
+          startY: ghDomain[0] + (j * ghSpace / grids),
+          endX: gwDomain[0] + ((i + 1) * gwSpace / grids - 1),
+          endY: ghDomain[0] + ((j + 1) * ghSpace / grids - 1),
+          startXRange: this.child.tools.scX(gwDomain[0] + (i * gwSpace / grids)),
+          endYRange: this.child.tools.scY(ghDomain[0] + (j * ghSpace / grids)),
+          endXRange: this.child.tools.scX(gwDomain[0] + ((i + 1) * gwSpace / grids - 1)),
+          startYRange: this.child.tools.scY(ghDomain[0] + ((j + 1) * ghSpace / grids - 1)),
+          members: [],
+          neighbors: [],
+          possibleMembers: [],
         });
       }
     }
+    const neighbors = [
+      -grids - 1, -grids, -grids + 1,
+      -1, 1,
+      grids - 1, grids, grids + 1
+    ];
     this.child.data.forEach(d => {
       for (let i = 0; i < sections.length; i++) {
         const s = sections[i];
         if (d.x >= s.startX && d.x <= s.endX && d.y >= s.startY && d.y <= s.endY) {
           s.members.push(d.name);
-          break;
+          neighbors.forEach(pos => {
+            if (i + pos >= 0 && i + pos <= sections.length - 1
+              // FIXME - need to think of 1D as 2D - around the bend
+            ) {
+              if (!s.neighbors.includes(sections[i + pos].index)) {
+                s.neighbors.push(sections[i + pos].index);
+              }
+              sections[i + pos].possibleMembers.push(d.name);
+            }
+          });
         }
       }
     });
-    const filteredSections = sections.filter(s => s.members.length > 0);
-    console.log(filteredSections);
+    const filteredSections = sections.filter(s => s.members.length > 0 || s.possibleMembers.length > 0);
 
 
     // Add Controller
@@ -107,27 +128,28 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
     // Gesture event
     this.controller.on('frame', onFrame);
-    let scalesSet = false
+
+    // Setup tasks
+    let scalesetCreated = false;
+    let focusFingersDefined = false;
+    let gPointersCreated = false;
 
     function onFrame(frame) {
+
       // Set scales if not set
-      if (!scalesSet) {
+      if (!scalesetCreated) {
+        vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
+        scalesetCreated = true;
+      }
 
-        const splitX = frame.interactionBox.width / 2;
-        vis.tools.scLeapX.domain([-splitX, splitX])
-          .range([0, window.innerWidth]);
-        const splitY = frame.interactionBox.height / 2;
-        vis.tools.scLeapY.domain([0, frame.interactionBox.height])
-          .range([window.innerHeight, 0]);
+      if (!focusFingersDefined) {
+        vis.leapEventsService.setFocusFingers(['Index']);
+        let focusFingersDefined = true;
+      }
 
-        const g = vis.child.els.g.node().getBoundingClientRect();
-        vis.tools.scVisgX.domain([g.left, g.left + g.width])
-          .range([0, g.width]);
-        vis.tools.scVisgY.domain([g.top, g.top + g.height])
-          .range([0, g.height]);
-
-        scalesSet = true
-
+      if (!gPointersCreated) {
+        vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
+        let gPointersCreated = true;
       }
 
       if (frame.fingers.length > 0) {
@@ -136,22 +158,51 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         vis.frame = frame;
 
         // Get coords (index finger)
-        const indexLeapX = frame.fingers[1].stabilizedTipPosition[0];
-        const indexLeapY = frame.fingers[1].stabilizedTipPosition[1];
-        const indexWindowX = vis.tools.scLeapX(indexLeapX);
-        const indexWindowY = vis.tools.scLeapY(indexLeapY);
-        const indexVisgX = vis.tools.scVisgX(indexWindowX);
-        const indexVisgY = vis.tools.scVisgY(indexWindowY);
+        const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
+        const indexFinger = fingerCoords.find(f => f.name === 'Index');
 
-        // Update visibility circ
-        vis.child.els.pointerCirc
-          .attr('cx', indexVisgX)
-          .attr('cy', indexVisgY);
+        // Update finger circs / pointers
+        vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
 
-        // Check if in available section
-        filteredSections.forEach(fs => {
+        // Ck if in available section and record name of members and possible members
+        let searchableSections = [];
+        for (let i = 0; i < filteredSections.length; i++) {
+          const fs = filteredSections[i];
+          if (indexFinger['x'] >= fs.startXRange && indexFinger['x'] <= fs.endXRange
+            && indexFinger['y'] >= fs.startYRange && indexFinger['y'] <= fs.endYRange
+          ) {
+            searchableSections.push(fs);
+            fs.neighbors.forEach(pos => {
+                searchableSections.push(sections[pos]);
+            });
+            break;
+          }
+        }
+        let searchableNames = [];
+        searchableSections.forEach(s => {
+          searchableNames = searchableNames.concat(s.members).concat(s.possibleMembers);
+        })
+        searchableNames = Array.from(new Set(searchableNames));
 
-        });
+        // Iterate bubbles
+        // Fixme - need to label bubbles by grid
+        vis.child.els.bubblesG.selectAll('.bubble')
+          .each(function(d) {
+            d3.select(this).attr('fill', d => {
+              if (searchableNames.includes(d.name)) {
+                const x = d3.select(this).attr('cx');
+                const y = d3.select(this).attr('cy');
+                const r = d3.select(this).attr('r');
+                const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
+                if (dist <= r) {
+                  return 'rgb(255,200,0)';
+                }
+              } else {
+                return 'rgb(0, 0, 0)';
+              }
+            })
+          })
+
 
       }
     }
