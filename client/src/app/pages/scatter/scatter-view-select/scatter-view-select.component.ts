@@ -19,6 +19,8 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
   // Class vars
   frame = null;
+  searchableSections = [];
+  searchableNames = [];
 
   // Class vars
   child = null;
@@ -152,6 +154,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         let gPointersCreated = true;
       }
 
+      // Hover
       if (frame.fingers.length > 0) {
 
         // Update frame
@@ -165,31 +168,31 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
 
         // Ck if in available section and record name of members and possible members
-        let searchableSections = [];
+        // let searchableSections = [];
         for (let i = 0; i < filteredSections.length; i++) {
           const fs = filteredSections[i];
           if (indexFinger['x'] >= fs.startXRange && indexFinger['x'] <= fs.endXRange
             && indexFinger['y'] >= fs.startYRange && indexFinger['y'] <= fs.endYRange
           ) {
-            searchableSections.push(fs);
+            vis.searchableSections.push(fs);
             fs.neighbors.forEach(pos => {
-                searchableSections.push(sections[pos]);
+                vis.searchableSections.push(sections[pos]);
             });
             break;
           }
         }
-        let searchableNames = [];
-        searchableSections.forEach(s => {
-          searchableNames = searchableNames.concat(s.members).concat(s.possibleMembers);
+        // let searchableNames = [];
+        vis.searchableSections.forEach(s => {
+          vis.searchableNames = vis.searchableNames.concat(s.members).concat(s.possibleMembers);
         })
-        searchableNames = Array.from(new Set(searchableNames));
+        vis.searchableNames = Array.from(new Set(vis.searchableNames));
 
         // Iterate bubbles
         // Fixme - need to label bubbles by grid
         vis.child.els.bubblesG.selectAll('.bubble')
           .each(function(d) {
             d3.select(this).attr('fill', d => {
-              if (searchableNames.includes(d.name)) {
+              if (vis.searchableNames.includes(d.name)) {
                 const x = d3.select(this).attr('cx');
                 const y = d3.select(this).attr('cy');
                 const r = d3.select(this).attr('r');
@@ -202,12 +205,45 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
               }
             })
           })
-
-
       }
+
+      // Hand motion
+      if (frame.hands.length > 0) {
+        frame.hands.forEach(function(hand) {
+
+          if (hand.grabStrength === 1) {
+            
+            console.log('Grab---searchableSections--->>', vis.searchableSections)
+            console.log('Grab---searchableNames--->>', vis.searchableNames)
+            console.log('f Gesture---searchableSections--->>', frame)
+            
+          }
+
+          if (hand.pinchStrength === 1){
+            
+            console.log('Pinch---searchableSections--->>', vis.searchableSections)
+            console.log('Pinch---searchableNames--->>', vis.searchableNames)
+            
+          }
+
+        })
+      }
+
+      
+      // Gesture 
+      /* if (frame.gestures.length > 0) {
+        frame.gestures.forEach(function(gesture) {
+
+          if(gesture.type == "keyTap" || gesture.type == "screenTap") {
+
+            console.log('Gesture---searchableSections--->>', vis.searchableSections)
+            console.log('Gesture---searchableNames--->>', vis.searchableNames)
+
+          }
+        })
+      }
+      */
     }
-
-
   }
 
   /**
