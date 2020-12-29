@@ -23,7 +23,8 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   // Class vars
   child = null;
   controller = null;
-  correctAnswer = 'Zurg';
+  nameHovered = '';
+  nameCorrect = 'Zurg';
   data = [];
   dataConfigs = {
     inputR: [0, 100],
@@ -151,7 +152,8 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
       if (frame.fingers.length > 0) {
 
         if (frame.data.gestures.length > 0) {
-          console.log(frame.data.gestures);
+          console.log('///////', vis.nameHovered)
+          frame.data.gestures.forEach(g => console.log(g.type));
         }
 
         // Update frame
@@ -195,6 +197,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
                 const r = d3.select(this).attr('r');
                 const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
                 if (dist <= r) {
+                  vis.nameHovered = d.name;
                   return 'rgb(255,200,0)';
                 }
               } else {
@@ -229,7 +232,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
    * checkAnswer
    */
   checkAnswer(name: string) {
-    if (name === this.correctAnswer) {
+    if (name === this.nameCorrect) {
       console.log('DING!');
     } else {
       console.log('WOMP!');
