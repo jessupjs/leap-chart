@@ -216,16 +216,13 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
           if (hand.grabStrength === 1) {
             
-            console.log('Grab---searchableSections--->>', vis.searchableSections)
-            console.log('Grab---searchableNames--->>', vis.searchableNames)
-            console.log('f Gesture---searchableSections--->>', frame)
+            console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
             
           }
 
           if (hand.pinchStrength === 1){
             
-            console.log('Pinch---searchableSections--->>', vis.searchableSections)
-            console.log('Pinch---searchableNames--->>', vis.searchableNames)
+            console.log('Pinch---vis.nameHovered--->>', vis.nameHovered)
             
           }
 
@@ -239,8 +236,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
           if(gesture.type == "keyTap" || gesture.type == "screenTap") {
 
-            console.log('Gesture---searchableSections--->>', vis.searchableSections)
-            console.log('Gesture---searchableNames--->>', vis.searchableNames)
+            console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
 
           }
         })
