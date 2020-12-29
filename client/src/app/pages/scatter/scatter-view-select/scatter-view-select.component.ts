@@ -170,7 +170,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
 
         // Ck if in available section and record name of members and possible members
-        // let searchableSections = [];
+        vis.searchableSections = [];
         for (let i = 0; i < filteredSections.length; i++) {
           const fs = filteredSections[i];
           if (indexFinger['x'] >= fs.startXRange && indexFinger['x'] <= fs.endXRange
@@ -183,7 +183,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
             break;
           }
         }
-        // let searchableNames = [];
+        vis.searchableNames = [];
         vis.searchableSections.forEach(s => {
           vis.searchableNames = vis.searchableNames.concat(s.members).concat(s.possibleMembers);
         })
@@ -215,25 +215,25 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         frame.hands.forEach(function(hand) {
 
           if (hand.grabStrength === 1) {
-            
+
             console.log('Grab---searchableSections--->>', vis.searchableSections)
             console.log('Grab---searchableNames--->>', vis.searchableNames)
             console.log('f Gesture---searchableSections--->>', frame)
-            
+
           }
 
           if (hand.pinchStrength === 1){
-            
+
             console.log('Pinch---searchableSections--->>', vis.searchableSections)
             console.log('Pinch---searchableNames--->>', vis.searchableNames)
-            
+
           }
 
         })
       }
 
-      
-      // Gesture 
+
+      // Gesture
       if (frame.data.gestures.length > 0) {
         frame.data.gestures.forEach(function(gesture) {
 
