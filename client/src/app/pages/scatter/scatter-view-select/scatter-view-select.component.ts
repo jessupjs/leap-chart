@@ -26,6 +26,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   child = null;
   controller = null;
   nameHovered = '';
+  nameSelected = '';
   nameCorrect = 'Zurg';
   data = [];
   dataConfigs = {
@@ -126,7 +127,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
 
     // Add Controller
-    this.controller = Leap.loop({enableGestures:true}, frame => onFrame(frame));
+    this.controller = Leap.loop({enableGestures: true}, frame => onFrame(frame));
 
     // Setup tasks
     let scalesetCreated = false;
@@ -154,11 +155,6 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
       // Hover
       if (frame.fingers.length > 0) {
 
-        if (frame.data.gestures.length > 0) {
-          console.log('///////', vis.nameHovered)
-          frame.data.gestures.forEach(g => console.log(g.type));
-        }
-
         // Update frame
         vis.frame = frame;
 
@@ -178,7 +174,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
           ) {
             vis.searchableSections.push(fs);
             fs.neighbors.forEach(pos => {
-                vis.searchableSections.push(sections[pos]);
+              vis.searchableSections.push(sections[pos]);
             });
             break;
           }
@@ -194,6 +190,9 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
         vis.child.els.bubblesG.selectAll('.bubble')
           .each(function(d) {
             d3.select(this).attr('fill', d => {
+              if (vis.nameSelected === d.name) {
+                return 'rgb(255, 0, 0)';
+              }
               if (vis.searchableNames.includes(d.name)) {
                 const x = d3.select(this).attr('cx');
                 const y = d3.select(this).attr('cy');
@@ -217,28 +216,30 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
           if (hand.grabStrength === 1) {
 
             console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
-
+            vis.nameSelected = vis.nameHovered;
+            vis.bubbleClick();
           }
 
-          if (hand.pinchStrength === 1){
+          if (hand.pinchStrength === 1) {
 
             console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
+            vis.nameSelected = vis.nameHovered;
+            vis.bubbleClick();
           }
-
-        })
+        });
       }
-
 
       // Gesture
       if (frame.data.gestures.length > 0) {
         frame.data.gestures.forEach(function(gesture) {
 
-          if(gesture.type == "keyTap" || gesture.type == "screenTap") {
+          if (gesture.type == "keyTap" || gesture.type == "screenTap") {
 
             console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
-
+            vis.nameSelected = vis.nameHovered;
+            vis.bubbleClick();
           }
-        })
+        });
       }
     }
   }
@@ -246,16 +247,19 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   /**
    * bubbleClick
    */
-  bubbleClick(e: any, d: any) {
+  bubbleClick() {
 
     // Update color
     d3.selectAll('.bubble')
-      .attr('fill', 'black');
-    d3.select(e.target)
-      .attr('fill', 'red');
+      .attr('fill', d => {
+        if (d.name === this.nameSelected) {
+          return 'rgba(255, 0, 0, 1)';
+        }
+        return 'rgba(0, 0, 0, 1)'
+      })
 
     // Check answer
-    this.checkAnswer(d.name)
+    // this.checkAnswer(d.name)
   }
 
   /**
