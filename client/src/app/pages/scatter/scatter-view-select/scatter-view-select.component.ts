@@ -125,11 +125,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
 
     // Add Controller
-    this.controller = new Leap.Controller();
-    this.controller.connect();
-
-    // Gesture event
-    this.controller.on('frame', onFrame);
+    this.controller = Leap.loop({enableGestures:true}, frame => onFrame(frame));
 
     // Setup tasks
     let scalesetCreated = false;
@@ -156,6 +152,10 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
       // Hover
       if (frame.fingers.length > 0) {
+
+        if (frame.data.gestures.length > 0) {
+          console.log(frame.data.gestures);
+        }
 
         // Update frame
         vis.frame = frame;
