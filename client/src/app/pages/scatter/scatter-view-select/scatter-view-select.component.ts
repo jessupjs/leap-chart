@@ -241,6 +241,14 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
           }
         });
       }
+
+      if (frame.pointables.length > 0) {
+        var touchDistance = frame.pointables[1].touchDistance;
+        var touchZone = frame.pointables[1].touchZone;
+
+        console.log('touchDistance------>>', touchDistance)
+        console.log('touchZone------>>', touchZone)
+      }
     }
   }
 
