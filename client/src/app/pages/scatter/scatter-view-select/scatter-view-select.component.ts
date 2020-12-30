@@ -213,13 +213,32 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
       const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
       console.log('Grab state------>>', handState) // open, closed, opening, closing, not detected
 
+      if (handState === 'closed') {
+        console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
+        vis.nameSelected = vis.nameHovered;
+        vis.bubbleClick();
+      }
+
       // Pinch status
       const pinchState = vis.leapEventsService.getPinchState(frame);
       console.log('Pinch state------>>', pinchState) // pinched, not pinched, not detected
 
+      if (pinchState === 'pinched') {
+
+        console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
+        vis.nameSelected = vis.nameHovered;
+        vis.bubbleClick();
+      }
+
       // Gesture
       const gestureType = vis.leapEventsService.getGestureType(frame);
       console.log('Gesture state------>>', gestureType) // swipe, keyTap, screenTap, circle, not detected
+
+      if (gestureType == "keyTap" || gestureType == "screenTap") {
+        console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
+        vis.nameSelected = vis.nameHovered;
+        vis.bubbleClick();
+      }
 
       // Touch
       const touchType = vis.leapEventsService.getTouchType(frame);
