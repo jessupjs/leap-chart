@@ -116,5 +116,82 @@ export class LeapEventsService {
       });
   }
 
+  /**
+  * getGestureType
+  */
+  getGestureType(frame: any) {
 
+    let gestureType =  "not detected";
+
+    if (frame.data.gestures.length > 0) {
+      frame.data.gestures.forEach(function(gesture) {
+        gestureType =  gesture.type;
+      })
+    }
+    return gestureType;
+  }
+
+  /**
+  * getGrabState
+  * ref: https://developer-archive.leapmotion.com/documentation/javascript/api/Leap.Hand.html
+  */
+  getHandStateFromHistory(frame: any, controller, historySamples = 10) {
+
+    let handState =  "not detected";
+
+    if (frame.hands.length > 0) {
+      frame.hands.forEach(function(hand) {
+
+        if(hand.grabStrength === 1) handState = "closed";
+        else if (hand.grabStrength === 0) handState = "open";
+        else {
+          var sum = 0, s = 0;
+          for(var s = 0; s < historySamples; s++) {
+              var oldHand = controller.frame(s).hand(hand.id)
+              if(!oldHand.valid) break;
+              sum += oldHand.grabStrength
+          }
+          var avg = sum/s;
+          if(hand.grabStrength - avg < 0) handState = "opening";
+          else if (hand.grabStrength > 0) handState = "closing";
+        }
+      })
+    }
+    return handState;
+  }
+
+  /**
+  * getPinchState
+  */
+  getPinchState(frame: any) {
+
+    let pinchState = "not detected";
+
+    if (frame.hands.length > 0) {
+      frame.hands.forEach(function(hand) {
+
+        if (hand.pinchStrength === 1) pinchState = "pinched";
+       else if (hand.pinchStrength < 1) pinchState = "not pinched";
+
+      })
+    }
+
+    return pinchState;
+  }
+
+  /**
+  * getTouchState
+  */
+  getTouchType(frame: any) {
+
+    let touchState = "not detected";
+    let touchDistance = "not detected";
+
+    if (frame.pointables.length > 0) {
+        touchDistance = frame.pointables[1].touchDistance;
+        touchState = frame.pointables[1].touchZone;
+      }
+
+    return touchState;
+  }
 }

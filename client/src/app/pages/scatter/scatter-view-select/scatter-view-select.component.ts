@@ -209,46 +209,21 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
           })
       }
 
-      // Hand motion
-      if (frame.hands.length > 0) {
-        frame.hands.forEach(function(hand) {
+      // Grab status
+      const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
+      console.log('Grab state------>>', handState) // open, closed, opening, closing, not detected
 
-          if (hand.grabStrength === 1) {
-
-            console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
-            vis.nameSelected = vis.nameHovered;
-            vis.bubbleClick();
-          }
-
-          if (hand.pinchStrength === 1) {
-
-            console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
-            vis.nameSelected = vis.nameHovered;
-            vis.bubbleClick();
-          }
-        });
-      }
+      // Pinch status
+      const pinchState = vis.leapEventsService.getPinchState(frame);
+      console.log('Pinch state------>>', pinchState) // pinched, not pinched, not detected
 
       // Gesture
-      if (frame.data.gestures.length > 0) {
-        frame.data.gestures.forEach(function(gesture) {
+      const gestureType = vis.leapEventsService.getGestureType(frame);
+      console.log('Gesture state------>>', gestureType) // swipe, keyTap, screenTap, circle, not detected
 
-          if (gesture.type == "keyTap" || gesture.type == "screenTap") {
-
-            console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
-            vis.nameSelected = vis.nameHovered;
-            vis.bubbleClick();
-          }
-        });
-      }
-
-      if (frame.pointables.length > 0) {
-        var touchDistance = frame.pointables[1].touchDistance;
-        var touchZone = frame.pointables[1].touchZone;
-
-        console.log('touchDistance------>>', touchDistance)
-        console.log('touchZone------>>', touchZone)
-      }
+      // Touch
+      const touchType = vis.leapEventsService.getTouchType(frame);
+      console.log('Touch state------>>', touchType) // hovering, touching, not detected
     }
   }
 
