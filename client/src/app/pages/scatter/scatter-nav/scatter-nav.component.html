@@ -1,7 +1,10 @@
 <div id="container">
   <div id="block">
-    <a *ngFor="let vK of viewsKeys"
-         [ngClass]="vK === selected ? 'view viewNow' : 'view viewLater'">
+    <a *ngFor="let vK of viewsKeys; index as i"
+       [ngClass]="vK === selected ? 'view viewNow' : 'view viewLater'"
+       (click)="clickView($event, vK)"
+    >
+      {{i}}
     </a>
   </div>
 </div>

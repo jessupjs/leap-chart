@@ -28,7 +28,7 @@ export class ScatterNavComponent implements OnInit {
     this.viewsKeys = Object.keys(this.components.views);
   }
 
-  /**
+  /** 1.
    *
    */
   init(): void {
@@ -37,7 +37,7 @@ export class ScatterNavComponent implements OnInit {
     this.wrangle();
   }
 
-  /**
+  /** 2.
    *
    */
   wrangle(): void {
@@ -49,13 +49,20 @@ export class ScatterNavComponent implements OnInit {
     this.render();
   }
 
-  /**
+  /** 3.
    *
    */
   render(): void {
 
     // Detect changes
     this.changeDetector.detectChanges();
+  }
+
+  /**
+   * clickView
+   */
+  clickView(e: Event, d: any) {
+    this.components['main'].instance.setSelectedView(d);
   }
 
 }

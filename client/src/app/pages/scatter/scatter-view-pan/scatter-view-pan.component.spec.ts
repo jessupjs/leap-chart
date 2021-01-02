@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BubblesComponent } from './bubbles.component';
+import { ScatterViewPanComponent } from './scatter-view-pan.component';
 
-describe('BubblesComponent', () => {
-  let component: BubblesComponent;
-  let fixture: ComponentFixture<BubblesComponent>;
+describe('ScatterViewPanComponent', () => {
+  let component: ScatterViewPanComponent;
+  let fixture: ComponentFixture<ScatterViewPanComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BubblesComponent ]
+      declarations: [ ScatterViewPanComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BubblesComponent);
+    fixture = TestBed.createComponent(ScatterViewPanComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -17,17 +17,9 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   // HTML
   @ViewChild('leap', {static: true}) leap: ElementRef;
 
-  // Class vars
-  frame = null;
-  searchableSections = [];
-  searchableNames = [];
-
-  // Class vars
+  // Class vars (shared)
   child = null;
   controller = null;
-  nameHovered = '';
-  nameSelected = '';
-  nameCorrect = 'Zurg';
   data = [];
   dataConfigs = {
     inputR: [0, 100],
@@ -38,13 +30,15 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
     unitY: 'Row',
     unitR: 'Evilness'
   };
+  frame = null;
   scalesetG: {};
-  tools = {
-    scLeapToWindowX: d3.scaleLinear(),
-    scLeapToWindowY: d3.scaleLinear(),
-    scWindowToContainerX: d3.scaleLinear(),
-    scWindowToContainerY: d3.scaleLinear(),
-  }
+
+  // Class vars (unique)
+  nameHovered = '';
+  nameSelected = '';
+  nameCorrect = 'Zurg';
+  searchableSections = [];
+  searchableNames = [];
 
   ngAfterViewInit() {
   }

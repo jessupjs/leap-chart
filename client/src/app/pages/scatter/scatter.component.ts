@@ -25,22 +25,19 @@ export class ScatterComponent implements OnInit, AfterViewInit {
         copy: 'Lil Space Cowboy X\'s concert has attracted some of the galaxy\'s most sinister super-evil supreme ' +
           'leaders. We\'ve located the most dangerous, but need you to select the worst of the worst to follow into ' +
           'the far reaches of the unknown universe.',
-        title: 'Part 1. The lineup (hover & select)',
-        instance: null,
-        selected: false
-      },
-      'lasso': {
-        copy: 'Lasso',
+        title: 'Part 1. The lineup (select)',
         instance: null,
         selected: false
       },
       'zoom': {
-        copy: 'Zoom',
+        copy: 'Need more story ...',
+        title: 'Part 2. (zoom)',
         instance: null,
         selected: false
       },
       'pan': {
-        copy: 'Pan',
+        copy: 'Need more story ...',
+        title: 'Part 3. (pan)',
         instance: null,
         selected: false
       },
@@ -69,6 +66,9 @@ export class ScatterComponent implements OnInit, AfterViewInit {
   setSelectedView(ref: string): void {
     this.selectedView = ref;
     this.components.views[ref].selected = true;
+    for (let [k, v] of Object.entries(this.components.views)) {
+      v.selected = k === ref;
+    }
 
     // Broadcast changes
     this.components['nav'].instance.wrangle();

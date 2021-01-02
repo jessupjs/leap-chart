@@ -8,5 +8,11 @@
     <app-scatter-view-select *ngIf="components.views['select'].selected"
       [components]="components"
     ></app-scatter-view-select>
+    <app-scatter-view-zoom *ngIf="components.views['zoom'].selected"
+      [components]="components"
+    ></app-scatter-view-zoom>
+    <app-scatter-view-pan *ngIf="components.views['pan'].selected"
+      [components]="components"
+    ></app-scatter-view-pan>
   </div>
 </div>
