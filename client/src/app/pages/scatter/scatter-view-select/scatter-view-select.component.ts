@@ -33,6 +33,9 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   frame = null;
   scalesetG: {};
 
+  // Add class svg name specific to gesture
+  className = 'select';
+
   // Class vars (unique)
   nameHovered = '';
   nameSelected = '';
@@ -246,7 +249,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   bubbleClick() {
 
     // Update color
-    d3.selectAll('.bubble')
+    d3.selectAll('.select .bubble')
       .attr('fill', d => {
         if (d.name === this.nameSelected) {
           return 'rgba(255, 0, 0, 1)';

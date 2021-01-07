@@ -1,5 +1,8 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {LeapEventsService} from "../leap-events.service";
+import * as d3 from 'd3';
+import * as Leap from 'leapjs';
+
 
 @Component({
   selector: 'app-scatter-view-zoom',
@@ -30,6 +33,9 @@ export class ScatterViewZoomComponent implements OnInit {
   frame = null;
   scalesetG: {};
 
+  // Add class svg name specific to gesture
+  className = 'zoom';
+
   constructor(
     private leapEventsService: LeapEventsService
   ) {
@@ -42,6 +48,9 @@ export class ScatterViewZoomComponent implements OnInit {
 
     // Get data
     this.data = this.getData();
+
+    // Add class svg name specific to gesture
+    this.className = 'zoom';
   }
 
   /**
@@ -51,6 +60,20 @@ export class ScatterViewZoomComponent implements OnInit {
 
     // This vis
     const vis = this;
+
+    // Add Controller
+    this.controller = Leap.loop({enableGestures: true}, frame => onFrame(frame));
+
+    function onFrame(frame) {
+
+      // Touch
+      const touchType = vis.leapEventsService.getTouchType(frame);
+      console.log('Touch state------>>', touchType) // hovering, touching, not detected
+
+      // Trigger Zoom
+      vis.triggerZoom(touchType)
+
+    }
   }
 
   /**
@@ -130,6 +153,31 @@ export class ScatterViewZoomComponent implements OnInit {
    */
   setChild(e: any): void {
     this.child = e;
+  }
+
+  /**
+  *
+  */
+  triggerZoom(touchType): void {
+
+    const svg = d3.select('svg.zoom');
+    const g = d3.select('svg g g');
+
+    const zoom = d3.zoom()
+      .scaleExtent([1, 40])
+      .on("zoom", zoomed);
+
+    function zoomed({transform}) {
+      g.attr("transform", transform);
+    }
+
+    svg.call(zoom);
+
+    if (touchType === 'touching') {
+      svg.transition().call(zoom.scaleBy, 2)
+    } else if (touchType === 'hovering') {
+      svg.transition().call(zoom.scaleBy, 0.5)
+    } 
   }
 
 }

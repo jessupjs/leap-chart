@@ -12,6 +12,7 @@ export class ScatterPlotComponent implements OnInit {
   @Input() data: [any];
   @Input() dataConfigs: any;
   @Input() parent: any;
+  @Input() className: [any];
   @Output() shareChild: EventEmitter<any> = new EventEmitter<any>();
 
   // HTML
@@ -79,7 +80,8 @@ export class ScatterPlotComponent implements OnInit {
     vis.els.svg = d3.select(vis.target.nativeElement)
       .append('svg')
       .attr('width', vis.configs.svgW)
-      .attr('height', vis.configs.svgH);
+      .attr('height', vis.configs.svgH)
+      .classed(vis.className, true);
     vis.els.g = vis.els.svg.append('g')
       .style('transform', `translate(${vis.configs.gMargin.right}px, ${vis.configs.gMargin.top}px)`);
 
