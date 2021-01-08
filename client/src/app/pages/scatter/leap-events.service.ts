@@ -79,8 +79,8 @@ export class LeapEventsService {
 
         if (finger) {
 
-          const leapX = frame.fingers[i].stabilizedTipPosition[0];
-          const leapY = frame.fingers[i].stabilizedTipPosition[1];
+          const leapX = frame.fingers[i].tipPosition[0];
+          const leapY = frame.fingers[i].tipPosition[1];
           const windowX = scaleset['scLeapToWindowX'](leapX);
           const windowY = scaleset['scLeapToWindowY'](leapY);
           const containerX = scaleset['scWindowToContainerX'](windowX);
