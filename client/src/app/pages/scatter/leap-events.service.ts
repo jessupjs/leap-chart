@@ -72,7 +72,7 @@ export class LeapEventsService {
 
     const fingerCoords = [];
 
-    if (frame && frame.has('fingers')) {
+    if (frame && frame.hasOwnProperty('fingers')) {
 
       frame.fingers.forEach((f, i) => {
 
