@@ -24,8 +24,8 @@ export class LeapEventsService {
    */
   generateScaleset(frame: any, container: Element): any {
 
-    const splitX = frame.interactionBox.width / 2;
-    const splitZ = frame.interactionBox.depth / 2;
+    const splitX = frame.hasOwnProperty('interactionBox') ? frame.interactionBox.width / 2 : 256;
+    const splitZ = frame.hasOwnProperty('interactionBox') ? frame.interactionBox.depth / 2 : 256;
     const scLeapToWindowX = d3.scaleLinear()
       .domain([-splitX, splitX])
       .range([0, window.innerWidth]);
@@ -72,23 +72,30 @@ export class LeapEventsService {
 
     const fingerCoords = [];
 
-    frame.fingers.forEach((f, i) => {
+    if (frame && frame.has('fingers')) {
 
-      const finger = this.fingers.find(f => f.index === i);
+      frame.fingers.forEach((f, i) => {
 
-      const leapX = frame.fingers[i].stabilizedTipPosition[0];
-      const leapY = frame.fingers[i].stabilizedTipPosition[1];
-      const windowX = scaleset['scLeapToWindowX'](leapX);
-      const windowY = scaleset['scLeapToWindowY'](leapY);
-      const containerX = scaleset['scWindowToContainerX'](windowX);
-      const containerY = scaleset['scWindowToContainerY'](windowY);
+        const finger = this.fingers.find(f => f.index === i);
 
-      fingerCoords.push({
-        name: finger.name,
-        x: containerX,
-        y: containerY
+        if (finger) {
+
+          const leapX = frame.fingers[i].stabilizedTipPosition[0];
+          const leapY = frame.fingers[i].stabilizedTipPosition[1];
+          const windowX = scaleset['scLeapToWindowX'](leapX);
+          const windowY = scaleset['scLeapToWindowY'](leapY);
+          const containerX = scaleset['scWindowToContainerX'](windowX);
+          const containerY = scaleset['scWindowToContainerY'](windowY);
+
+          fingerCoords.push({
+            name: finger.name,
+            x: containerX,
+            y: containerY
+          });
+        }
       });
-    });
+
+    }
 
     return fingerCoords;
   }
@@ -117,42 +124,46 @@ export class LeapEventsService {
   }
 
   /**
-  * getGestureType
-  */
+   * getGestureType
+   */
   getGestureType(frame: any) {
 
-    let gestureType =  "not detected";
+    let gestureType = "not detected";
 
-    if (frame.data.gestures.length > 0) {
-      frame.data.gestures.forEach(function(gesture) {
-        gestureType =  gesture.type;
-      })
+    if (frame && frame.data && frame.data.gestures) {
+
+      if (frame.data.gestures.length > 0) {
+        frame.data.gestures.forEach(function(gesture) {
+          gestureType = gesture.type;
+        })
+      }
+      return gestureType;
     }
-    return gestureType;
+
   }
 
   /**
-  * getGrabState
-  * ref: https://developer-archive.leapmotion.com/documentation/javascript/api/Leap.Hand.html
-  */
+   * getGrabState
+   * ref: https://developer-archive.leapmotion.com/documentation/javascript/api/Leap.Hand.html
+   */
   getHandStateFromHistory(frame: any, controller, historySamples = 10) {
 
-    let handState =  "not detected";
+    let handState = "not detected";
 
-    if (frame.hands.length > 0) {
+    if (frame && frame.hands && frame.hands.length > 0) {
       frame.hands.forEach(function(hand) {
 
-        if(hand.grabStrength === 1) handState = "closed";
+        if (hand.grabStrength === 1) handState = "closed";
         else if (hand.grabStrength === 0) handState = "open";
         else {
           var sum = 0, s = 0;
-          for(var s = 0; s < historySamples; s++) {
-              var oldHand = controller.frame(s).hand(hand.id)
-              if(!oldHand.valid) break;
-              sum += oldHand.grabStrength
+          for (var s = 0; s < historySamples; s++) {
+            var oldHand = controller.frame(s).hand(hand.id)
+            if (!oldHand.valid) break;
+            sum += oldHand.grabStrength
           }
-          var avg = sum/s;
-          if(hand.grabStrength - avg < 0) handState = "opening";
+          var avg = sum / s;
+          if (hand.grabStrength - avg < 0) handState = "opening";
           else if (hand.grabStrength > 0) handState = "closing";
         }
       })
@@ -161,17 +172,17 @@ export class LeapEventsService {
   }
 
   /**
-  * getPinchState
-  */
+   * getPinchState
+   */
   getPinchState(frame: any) {
 
     let pinchState = "not detected";
 
-    if (frame.hands.length > 0) {
+    if (frame && frame.hands && frame.hands.length > 0) {
       frame.hands.forEach(function(hand) {
 
         if (hand.pinchStrength === 1) pinchState = "pinched";
-       else if (hand.pinchStrength < 1) pinchState = "not pinched";
+        else if (hand.pinchStrength < 1) pinchState = "not pinched";
 
       })
     }
@@ -180,17 +191,17 @@ export class LeapEventsService {
   }
 
   /**
-  * getTouchState
-  */
+   * getTouchState
+   */
   getTouchType(frame: any) {
 
     let touchState = "not detected";
     let touchDistance = "not detected";
 
-    if (frame.pointables.length > 0) {
-        touchDistance = frame.pointables[1].touchDistance;
-        touchState = frame.pointables[1].touchZone;
-      }
+    if (frame && frame.pointables && frame.pointables.length > 0) {
+      touchDistance = frame.pointables[1].touchDistance;
+      touchState = frame.pointables[1].touchZone;
+    }
 
     return touchState;
   }
