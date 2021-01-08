@@ -25,12 +25,11 @@ export class LeapEventsService {
   generateScaleset(frame: any, container: Element): any {
 
     const splitX = frame.hasOwnProperty('interactionBox') ? frame.interactionBox.width / 2 : 256;
-    const splitZ = frame.hasOwnProperty('interactionBox') ? frame.interactionBox.depth / 2 : 256;
     const scLeapToWindowX = d3.scaleLinear()
       .domain([-splitX, splitX])
       .range([0, window.innerWidth]);
     const scLeapToWindowY = d3.scaleLinear()
-      .domain([0, frame.interactionBox.height])
+      .domain([0, frame.hasOwnProperty('interactionBox') ? frame.interactionBox.height : 256])
       .range([window.innerHeight, 0]);
 
     const containerRect = container.getBoundingClientRect();
