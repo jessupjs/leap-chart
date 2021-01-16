@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import * as Leap from 'leapjs';
 import {LeapEventsService} from "../leap-events.service";
@@ -9,7 +9,7 @@ import {filter} from "rxjs/operators";
   templateUrl: './scatter-view-select.component.html',
   styleUrls: ['./scatter-view-select.component.scss']
 })
-export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
+export class ScatterViewSelectComponent implements OnInit {
 
   // Input, output
   @Input() components: any;
@@ -22,6 +22,7 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   controller = null;
   data = [];
   dataConfigs = {
+    duration: 750,
     inputR: [0, 100],
     inputX: [0, 100],
     inputY: [0, 100],
@@ -42,9 +43,6 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
   nameCorrect = 'Zurg';
   searchableSections = [];
   searchableNames = [];
-
-  ngAfterViewInit() {
-  }
 
   constructor(
     private leapEventsService: LeapEventsService
@@ -67,10 +65,6 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
     // This vis
     const vis = this;
-
-    // Click event
-    this.child.els.bubblesG.selectAll('.bubble')
-      .on('click', this.bubbleClick.bind(this));
 
     // Break scales into sections
     const gwDomain = this.child.tools.scX.domain();
@@ -121,7 +115,6 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
       }
     });
     const filteredSections = sections.filter(s => s.members.length > 0 || s.possibleMembers.length > 0);
-
 
     // Add Controller
     this.controller = Leap.loop({enableGestures: true}, frame => onFrame(frame));
@@ -208,38 +201,38 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
 
       // Grab status
       const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
-      console.log('Grab state------>>', handState) // open, closed, opening, closing, not detected
+      // console.log('Grab state------>>', handState) // open, closed, opening, closing, not detected
 
       if (handState === 'closed') {
-        console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
+        // console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
         vis.nameSelected = vis.nameHovered;
         vis.bubbleClick();
       }
 
       // Pinch status
       const pinchState = vis.leapEventsService.getPinchState(frame, vis.controller, 10);
-      console.log('Pinch state------>>', pinchState) // pinched, not pinched, pinch opening, pinch closing, not detected
+      // console.log('Pinch state------>>', pinchState) // pinched, not pinched, pinch opening, pinch closing, not detected
 
       if (pinchState === 'pinched') {
 
-        console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
+        // console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
         vis.nameSelected = vis.nameHovered;
         vis.bubbleClick();
       }
 
       // Gesture
       const gestureType = vis.leapEventsService.getGestureType(frame);
-      console.log('Gesture state------>>', gestureType) // swipe, keyTap, screenTap, circle, not detected
+      // console.log('Gesture state------>>', gestureType) // swipe, keyTap, screenTap, circle, not detected
 
       if (gestureType == "keyTap" || gestureType == "screenTap") {
-        console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
+        // console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
         vis.nameSelected = vis.nameHovered;
         vis.bubbleClick();
       }
 
       // Touch
       const touchType = vis.leapEventsService.getTouchType(frame);
-      console.log('Touch state------>>', touchType) // hovering, touching, not detected
+      // console.log('Touch state------>>', touchType) // hovering, touching, not detected
     }
   }
 
@@ -248,17 +241,23 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
    */
   bubbleClick() {
 
+    // Init datum
+    let datum = null
+
     // Update color
     d3.selectAll('.select .bubble')
       .attr('fill', d => {
         if (d.name === this.nameSelected) {
+          datum = d
           return 'rgba(255, 0, 0, 1)';
         }
         return 'rgba(0, 0, 0, 1)'
       })
 
     // Check answer
-    // this.checkAnswer(d.name)
+    if (datum) {
+      this.checkAnswer(datum.name);
+    }
   }
 
   /**
@@ -266,9 +265,9 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
    */
   checkAnswer(name: string) {
     if (name === this.nameCorrect) {
-      console.log('DING!');
+      console.log(name, '... DING!');
     } else {
-      console.log('WOMP!');
+      console.log(name, '... WOMP!');
     }
   }
 

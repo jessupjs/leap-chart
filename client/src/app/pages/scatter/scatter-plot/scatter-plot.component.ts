@@ -86,8 +86,10 @@ export class ScatterPlotComponent implements OnInit {
       .style('transform', `translate(${vis.configs.gMargin.right}px, ${vis.configs.gMargin.top}px)`);
 
     // Add major groups
-    vis.els.bubblesG = vis.els.g.append('g');
-    vis.els.axesG = vis.els.g.append('g');
+    vis.els.bubblesG = vis.els.g.append('g')
+      .attr('class', 'bubblesG');
+    vis.els.axesG = vis.els.g.append('g')
+      .attr('class', 'axesG');
 
     // Add axes
     vis.els.axisX = vis.els.axesG.append('g')
@@ -96,19 +98,8 @@ export class ScatterPlotComponent implements OnInit {
       .style('transform', `translateX(${vis.configs.gW + vis.configs.axisPad}px)`);
 
     // Add other interactive stuf
-    vis.els.pointersG = vis.els.g.append('g');
-
-      // ..
-    this.wrangle();
-  }
-
-  /**
-   * wrangle
-   */
-  wrangle(): void {
-
-    // This vis
-    const vis = this;
+    vis.els.pointersG = vis.els.g.append('g')
+      .attr('class', 'pointersG');
 
     // Config scales
     this.tools.scR
@@ -120,6 +111,17 @@ export class ScatterPlotComponent implements OnInit {
     this.tools.scY
       .domain(vis.dataConfigs.inputY)
       .range([vis.configs.gH, 0]);
+
+      // ..
+    this.wrangle();
+  }
+
+  /**
+   * wrangle
+   */
+  wrangle(): void {
+    // This vis
+    const vis = this;
 
     // Config axes
     this.tools.axisX.scale(this.tools.scX);
@@ -142,7 +144,7 @@ export class ScatterPlotComponent implements OnInit {
       .data(vis.data, (d, i) => i)
       .join('circle')
       .attr('class', 'bubble');
-    bubbles.transition()
+    bubbles.transition(vis.dataConfigs.duration)
       .attr('r', d => vis.tools.scR(d.r))
       .attr('cx', d => vis.tools.scX(d.x))
       .attr('cy', d => vis.tools.scY(d.y))

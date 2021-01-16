@@ -1,5 +1,5 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {LeapEventsService} from "../leap-events.service";
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {LeapEventsService} from '../leap-events.service';
 import * as d3 from 'd3';
 import * as Leap from 'leapjs';
 
@@ -9,7 +9,7 @@ import * as Leap from 'leapjs';
   templateUrl: './scatter-view-zoom.component.html',
   styleUrls: ['./scatter-view-zoom.component.scss']
 })
-export class ScatterViewZoomComponent implements OnInit {
+export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
   // Input, output
   @Input() components: any;
@@ -22,6 +22,7 @@ export class ScatterViewZoomComponent implements OnInit {
   controller = null;
   data = [];
   dataConfigs = {
+    duration: 1500,
     inputR: [0, 100],
     inputX: [0, 100],
     inputY: [0, 100],
@@ -31,7 +32,27 @@ export class ScatterViewZoomComponent implements OnInit {
     unitR: 'Evilness'
   };
   frame = null;
+  modes = {
+    'zoomed': false,
+    'gesture': ''
+  }
   scalesetG: {};
+
+
+  // D3
+  configs = {
+    centerX: 0,
+    centerY: 0,
+    hoverX: 0,
+    hoverY: 0
+  };
+  els = {
+    bubblesG: null,
+    svg: null
+  };
+  tools = {
+    zoom: null
+  };
 
   // Add class svg name specific to gesture
   className = 'zoom';
@@ -53,6 +74,12 @@ export class ScatterViewZoomComponent implements OnInit {
     this.className = 'zoom';
   }
 
+  ngAfterViewInit() {
+
+    // Color target
+    this.colorTarget();
+  }
+
   /**
    * addEvents
    */
@@ -64,16 +91,66 @@ export class ScatterViewZoomComponent implements OnInit {
     // Add Controller
     this.controller = Leap.loop({enableGestures: true}, frame => onFrame(frame));
 
+    // Setup tasks
+    let scalesetCreated = false;
+    let focusFingersDefined = false;
+    let gPointersCreated = false;
+
     function onFrame(frame) {
+
+      // Set scales if not set
+      if (!scalesetCreated) {
+        vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
+        scalesetCreated = true;
+      }
+
+      if (!focusFingersDefined) {
+        vis.leapEventsService.setFocusFingers(['Index']);
+        let focusFingersDefined = true;
+      }
+
+      if (!gPointersCreated) {
+        vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
+        let gPointersCreated = true;
+      }
+
+      // Hover
+      if (frame.fingers.length > 0) {
+
+        // Update frame
+        vis.frame = frame;
+
+        // Get coords (index finger)
+        const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
+        const indexFinger = fingerCoords.find(f => f.name === 'Index');
+        vis.configs.hoverX = indexFinger.x;
+        vis.configs.hoverY = indexFinger.y;
+
+        // Update finger circs / pointers
+        vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
+      }
 
       // Touch
       const touchType = vis.leapEventsService.getTouchType(frame);
-      console.log('Touch state------>>', touchType) // hovering, touching, not detected
+      // console.log('Touch state------>>', touchType) // hovering, touching, not detected
 
       // Trigger Zoom
-      vis.triggerZoom(touchType)
+      vis.manageZoom(touchType)
 
     }
+  }
+
+  /**
+   * colorTarget
+   */
+  colorTarget(): void {
+    this.child.els.bubblesG.selectAll('circle')
+      .each(function(d, i) {
+        if (d.name === 'Badubada') {
+          d3.select(this)
+            .attr('fill', 'rgba(255, 0, 0, 1)')
+        }
+      })
   }
 
   /**
@@ -139,11 +216,10 @@ export class ScatterViewZoomComponent implements OnInit {
 
     collection.push({
       name: 'Badubada',
-      x: 50,
-      y: 50,
+      x: 48,
+      y: 53,
       r: 100,
-    })
-
+    });
 
     return collection;
   }
@@ -156,28 +232,52 @@ export class ScatterViewZoomComponent implements OnInit {
   }
 
   /**
-  *
-  */
-  triggerZoom(touchType): void {
+   *
+   */
+  manageZoom(gesture): void {
 
-    const svg = d3.select('svg.zoom');
-    const g = d3.select('svg g g');
+    if (gesture !== this.modes.gesture) {
 
-    const zoom = d3.zoom()
-      .scaleExtent([1, 40])
-      .on("zoom", zoomed);
+      this.modes.gesture = gesture;
 
-    function zoomed({transform}) {
-      g.attr("transform", transform);
+      if (gesture === 'touching') {
+        this.zoomIn();
+      } else if (gesture === 'hovering') {
+        this.zoomOut();
+      }
     }
+  }
 
-    svg.call(zoom);
+  /**
+   * zoomIn
+   */
+  zoomIn(): void {
 
-    if (touchType === 'touching') {
-      svg.transition().call(zoom.scaleBy, 2)
-    } else if (touchType === 'hovering') {
-      svg.transition().call(zoom.scaleBy, 0.5)
-    } 
+    // Check sub selections
+    const invX = this.child.tools.scX.invert(this.configs.hoverX);
+    const invY = this.child.tools.scY.invert(this.configs.hoverY);
+
+    // Update scales
+    this.child.tools.scX.domain([invX - 10, invX + 10]);
+    this.child.tools.scY.domain([invY - 10, invY + 10]);
+    this.child.tools.scR.range([0, 25]);
+
+    this.child.wrangle();
+
+  }
+
+  /**
+   * zoomOut
+   */
+  zoomOut(): void {
+
+    // Reset scalees
+    this.child.tools.scX.domain(this.dataConfigs.inputX);
+    this.child.tools.scY.domain(this.dataConfigs.inputY);
+    this.child.tools.scR.range(this.dataConfigs.outputR);
+
+    this.child.wrangle();
+
   }
 
 }

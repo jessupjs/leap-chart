@@ -31,7 +31,6 @@ export class LeapEventsService {
     const scLeapToWindowY = d3.scaleLinear()
       .domain([0, frame.hasOwnProperty('interactionBox') ? frame.interactionBox.height : 256])
       .range([window.innerHeight, 0]);
-
     const containerRect = container.getBoundingClientRect();
     const scWindowToContainerX = d3.scaleLinear()
       .domain([containerRect.left, containerRect.left + containerRect.width])
@@ -40,11 +39,12 @@ export class LeapEventsService {
       .domain([containerRect.top, containerRect.top + containerRect.height])
       .range([0, containerRect.height]);
 
+
     return {
       'scLeapToWindowX': scLeapToWindowX,
       'scLeapToWindowY': scLeapToWindowY,
       'scWindowToContainerX': scWindowToContainerX,
-      'scWindowToContainerY': scWindowToContainerY
+      'scWindowToContainerY': scWindowToContainerY,
     }
   }
 
@@ -81,6 +81,7 @@ export class LeapEventsService {
 
           const leapX = frame.fingers[i].tipPosition[0];
           const leapY = frame.fingers[i].tipPosition[1];
+          const leapZ = frame.fingers[i].tipPosition[2];
           const windowX = scaleset['scLeapToWindowX'](leapX);
           const windowY = scaleset['scLeapToWindowY'](leapY);
           const containerX = scaleset['scWindowToContainerX'](windowX);
@@ -155,7 +156,7 @@ export class LeapEventsService {
         if (hand.grabStrength === 1) handState = "closed";
         else if (hand.grabStrength === 0) handState = "open";
         else {
-          var sum = 0, s = 0;
+          var sum = 0;
           for (var s = 0; s < historySamples; s++) {
             var oldHand = controller.frame(s).hand(hand.id)
             if (!oldHand.valid) break;
@@ -183,7 +184,7 @@ export class LeapEventsService {
         if (hand.pinchStrength === 1) pinchState = "pinched";
         else if (hand.pinchStrength < 1) pinchState = "not pinched";
         else {
-          var sum = 0, s = 0;
+          var sum = 0;
           for (var s = 0; s < historySamples; s++) {
             var oldHand = controller.frame(s).hand(hand.id)
             if (!oldHand.valid) break;
