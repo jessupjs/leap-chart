@@ -31,8 +31,15 @@ export class ScatterViewSelectComponent implements OnInit {
     unitY: 'Row',
     unitR: 'Evilness'
   };
+  filteredSections = [];
   frame = null;
+  sections = [];
   scalesetG: {};
+
+  // Setup tasks
+  scalesetCreated = false;
+  focusFingersDefined = false;
+  gPointersCreated = false;
 
   // Add class svg name specific to gesture
   className = 'select';
@@ -54,6 +61,12 @@ export class ScatterViewSelectComponent implements OnInit {
     // Set board in thread
     this.components.views['select'].instance = this;
 
+    // Update scatter board active component
+    this.components['board'].instance.activeComponent = this;
+
+    // Set controller
+    this.controller = this.components['board'].instance.controller;
+
     // Get data
     this.data = this.getData();
   }
@@ -72,10 +85,10 @@ export class ScatterViewSelectComponent implements OnInit {
     const gwSpace = Math.abs(gwDomain[0]) + Math.abs(gwDomain[1]);
     const ghSpace = Math.abs(ghDomain[0]) + Math.abs(ghDomain[1]);
     const grids = 10;
-    const sections = []
+    vis.sections = []
     for (let i = 0; i < grids; i++) {
       for (let j = 0; j < grids; j++) {
-        sections.push({
+        this.sections.push({
           index: i + j,
           startX: gwDomain[0] + (i * gwSpace / grids),
           startY: ghDomain[0] + (j * ghSpace / grids),
@@ -97,143 +110,25 @@ export class ScatterViewSelectComponent implements OnInit {
       grids - 1, grids, grids + 1
     ];
     this.child.data.forEach(d => {
-      for (let i = 0; i < sections.length; i++) {
-        const s = sections[i];
+      for (let i = 0; i < this.sections.length; i++) {
+        const s = this.sections[i];
         if (d.x >= s.startX && d.x <= s.endX && d.y >= s.startY && d.y <= s.endY) {
           s.members.push(d.name);
           neighbors.forEach(pos => {
-            if (i + pos >= 0 && i + pos <= sections.length - 1
+            if (i + pos >= 0 && i + pos <= this.sections.length - 1
               // FIXME - need to think of 1D as 2D - around the bend
             ) {
-              if (!s.neighbors.includes(sections[i + pos].index)) {
-                s.neighbors.push(sections[i + pos].index);
+              if (!s.neighbors.includes(this.sections[i + pos].index)) {
+                s.neighbors.push(this.sections[i + pos].index);
               }
-              sections[i + pos].possibleMembers.push(d.name);
+              this.sections[i + pos].possibleMembers.push(d.name);
             }
           });
         }
       }
     });
-    const filteredSections = sections.filter(s => s.members.length > 0 || s.possibleMembers.length > 0);
+    this.filteredSections = this.sections.filter(s => s.members.length > 0 || s.possibleMembers.length > 0);
 
-    // Add Controller
-    this.controller = Leap.loop({enableGestures: true}, frame => onFrame(frame));
-
-    // Setup tasks
-    let scalesetCreated = false;
-    let focusFingersDefined = false;
-    let gPointersCreated = false;
-
-    function onFrame(frame) {
-
-      // Set scales if not set
-      if (!scalesetCreated) {
-        vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
-        scalesetCreated = true;
-      }
-
-      if (!focusFingersDefined) {
-        vis.leapEventsService.setFocusFingers(['Index']);
-        let focusFingersDefined = true;
-      }
-
-      if (!gPointersCreated) {
-        vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
-        let gPointersCreated = true;
-      }
-
-      // Hover
-      if (frame.fingers.length > 0) {
-
-        // Update frame
-        vis.frame = frame;
-
-        // Get coords (index finger)
-        const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
-        const indexFinger = fingerCoords.find(f => f.name === 'Index');
-
-        // Update finger circs / pointers
-        vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
-
-        // Ck if in available section and record name of members and possible members
-        vis.searchableSections = [];
-        for (let i = 0; i < filteredSections.length; i++) {
-          const fs = filteredSections[i];
-          if (indexFinger['x'] >= fs.startXRange && indexFinger['x'] <= fs.endXRange
-            && indexFinger['y'] >= fs.startYRange && indexFinger['y'] <= fs.endYRange
-          ) {
-            vis.searchableSections.push(fs);
-            fs.neighbors.forEach(pos => {
-              vis.searchableSections.push(sections[pos]);
-            });
-            break;
-          }
-        }
-        vis.searchableNames = [];
-        vis.searchableSections.forEach(s => {
-          vis.searchableNames = vis.searchableNames.concat(s.members).concat(s.possibleMembers);
-        })
-        vis.searchableNames = Array.from(new Set(vis.searchableNames));
-
-        // Iterate bubbles
-        // Fixme - need to label bubbles by grid
-        vis.child.els.bubblesG.selectAll('.bubble')
-          .each(function(d) {
-            d3.select(this).attr('fill', d => {
-              if (vis.nameSelected === d.name) {
-                return 'rgb(255, 0, 0)';
-              }
-              if (vis.searchableNames.includes(d.name)) {
-                const x = d3.select(this).attr('cx');
-                const y = d3.select(this).attr('cy');
-                const r = d3.select(this).attr('r');
-                const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
-                if (dist <= r) {
-                  vis.nameHovered = d.name;
-                  return 'rgb(255,200,0)';
-                }
-              } else {
-                return 'rgb(0, 0, 0)';
-              }
-            })
-          })
-      }
-
-      // Grab status
-      const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
-      // console.log('Grab state------>>', handState) // open, closed, opening, closing, not detected
-
-      if (handState === 'closed') {
-        // console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
-        vis.nameSelected = vis.nameHovered;
-        vis.bubbleClick();
-      }
-
-      // Pinch status
-      const pinchState = vis.leapEventsService.getPinchState(frame, vis.controller, 10);
-      // console.log('Pinch state------>>', pinchState) // pinched, not pinched, pinch opening, pinch closing, not detected
-
-      if (pinchState === 'pinched') {
-
-        // console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
-        vis.nameSelected = vis.nameHovered;
-        vis.bubbleClick();
-      }
-
-      // Gesture
-      const gestureType = vis.leapEventsService.getGestureType(frame);
-      // console.log('Gesture state------>>', gestureType) // swipe, keyTap, screenTap, circle, not detected
-
-      if (gestureType == "keyTap" || gestureType == "screenTap") {
-        // console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
-        vis.nameSelected = vis.nameHovered;
-        vis.bubbleClick();
-      }
-
-      // Touch
-      const touchType = vis.leapEventsService.getTouchType(frame);
-      // console.log('Touch state------>>', touchType) // hovering, touching, not detected
-    }
   }
 
   /**
@@ -301,6 +196,122 @@ export class ScatterViewSelectComponent implements OnInit {
         r: 25
       },
     ]
+  }
+
+  /**
+   * onFrame
+   */
+  onFrame(frame) {
+
+    const vis = this;
+
+    // Set scales if not set
+    if (!this.scalesetCreated) {
+      vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
+      this.scalesetCreated = true;
+    }
+
+    if (!this.focusFingersDefined) {
+      vis.leapEventsService.setFocusFingers(['Index']);
+      let focusFingersDefined = true;
+    }
+
+    if (!this.gPointersCreated) {
+      vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
+      let gPointersCreated = true;
+    }
+
+    // Hover
+    if (frame.fingers.length > 0) {
+
+      // Update frame
+      vis.frame = frame;
+
+      // Get coords (index finger)
+      const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
+      const indexFinger = fingerCoords.find(f => f.name === 'Index');
+
+      // Update finger circs / pointers
+      vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
+
+      // Ck if in available section and record name of members and possible members
+      vis.searchableSections = [];
+      for (let i = 0; i < vis.filteredSections.length; i++) {
+        const fs = vis.filteredSections[i];
+        if (indexFinger['x'] >= fs.startXRange && indexFinger['x'] <= fs.endXRange
+          && indexFinger['y'] >= fs.startYRange && indexFinger['y'] <= fs.endYRange
+        ) {
+          vis.searchableSections.push(fs);
+          fs.neighbors.forEach(pos => {
+            vis.searchableSections.push(vis.sections[pos]);
+          });
+          break;
+        }
+      }
+      vis.searchableNames = [];
+      vis.searchableSections.forEach(s => {
+        vis.searchableNames = vis.searchableNames.concat(s.members).concat(s.possibleMembers);
+      })
+      vis.searchableNames = Array.from(new Set(vis.searchableNames));
+
+      // Iterate bubbles
+      // Fixme - need to label bubbles by grid
+      vis.child.els.bubblesG.selectAll('.bubble')
+        .each(function(d) {
+          d3.select(this).attr('fill', d => {
+            if (vis.nameSelected === d.name) {
+              return 'rgb(255, 0, 0)';
+            }
+            if (vis.searchableNames.includes(d.name)) {
+              const x = d3.select(this).attr('cx');
+              const y = d3.select(this).attr('cy');
+              const r = d3.select(this).attr('r');
+              const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
+              if (dist <= r) {
+                vis.nameHovered = d.name;
+                return 'rgb(255,200,0)';
+              }
+            } else {
+              return 'rgb(0, 0, 0)';
+            }
+          })
+        })
+    }
+
+    // Grab status
+    const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
+    // console.log('Grab state------>>', handState) // open, closed, opening, closing, not detected
+
+    if (handState === 'closed') {
+      // console.log('Grab---vis.nameHovered--->>', vis.nameHovered)
+      vis.nameSelected = vis.nameHovered;
+      vis.bubbleClick();
+    }
+
+    // Pinch status
+    const pinchState = vis.leapEventsService.getPinchState(frame, vis.controller, 10);
+    // console.log('Pinch state------>>', pinchState) // pinched, not pinched, pinch opening, pinch closing, not detected
+
+    if (pinchState === 'pinched') {
+
+      // console.log('Pinch---vis.nameHovered--->>', vis.nameHovered);
+      vis.nameSelected = vis.nameHovered;
+      vis.bubbleClick();
+    }
+
+    // Gesture
+    const gestureType = vis.leapEventsService.getGestureType(frame);
+    // console.log('Gesture state------>>', gestureType) // swipe, keyTap, screenTap, circle, not detected
+
+    if (gestureType == "keyTap" || gestureType == "screenTap") {
+      // console.log('Gesture---vis.nameHovered--->>', vis.nameHovered)
+      vis.nameSelected = vis.nameHovered;
+      vis.bubbleClick();
+    }
+
+    // Touch
+    const touchType = vis.leapEventsService.getTouchType(frame);
+    // console.log('Touch state------>>', touchType) // hovering, touching, not detected
   }
 
   /**

@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {LeapEventsService} from '../leap-events.service';
 import * as d3 from 'd3';
-import * as Leap from 'leapjs';
 
 
 @Component({
@@ -38,6 +37,11 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
   }
   scalesetG: {};
 
+  // Setup tasks
+  scalesetCreated = false;
+  focusFingersDefined = false;
+  gPointersCreated = false;
+
 
   // D3
   configs = {
@@ -67,6 +71,12 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
     // Set board in thread
     this.components.views['zoom'].instance = this;
 
+    // Update scatter board active component
+    this.components['board'].instance.activeComponent = this;
+
+    // Set controller
+    this.controller = this.components['board'].instance.controller;
+
     // Get data
     this.data = this.getData();
 
@@ -85,59 +95,6 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
    */
   addEvents(): void {
 
-    // This vis
-    const vis = this;
-
-    // Add Controller
-    this.controller = Leap.loop({enableGestures: true}, frame => onFrame(frame));
-
-    // Setup tasks
-    let scalesetCreated = false;
-    let focusFingersDefined = false;
-    let gPointersCreated = false;
-
-    function onFrame(frame) {
-
-      // Set scales if not set
-      if (!scalesetCreated) {
-        vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
-        scalesetCreated = true;
-      }
-
-      if (!focusFingersDefined) {
-        vis.leapEventsService.setFocusFingers(['Index']);
-        let focusFingersDefined = true;
-      }
-
-      if (!gPointersCreated) {
-        vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
-        let gPointersCreated = true;
-      }
-
-      // Hover
-      if (frame.fingers.length > 0) {
-
-        // Update frame
-        vis.frame = frame;
-
-        // Get coords (index finger)
-        const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
-        const indexFinger = fingerCoords.find(f => f.name === 'Index');
-        vis.configs.hoverX = indexFinger.x;
-        vis.configs.hoverY = indexFinger.y;
-
-        // Update finger circs / pointers
-        vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
-      }
-
-      // Touch
-      const touchType = vis.leapEventsService.getTouchType(frame);
-      // console.log('Touch state------>>', touchType) // hovering, touching, not detected
-
-      // Trigger Zoom
-      vis.manageZoom(touchType)
-
-    }
   }
 
   /**
@@ -216,8 +173,8 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
     collection.push({
       name: 'Badubada',
-      x: 48,
-      y: 53,
+      x: 76,
+      y: 74,
       r: 100,
     });
 
@@ -246,6 +203,54 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
         this.zoomOut();
       }
     }
+  }
+
+  /**
+   * onFrame
+   */
+  onFrame(frame: any): void {
+
+    const vis = this;
+
+    // Set scales if not set
+    if (!this.scalesetCreated) {
+      vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
+      this.scalesetCreated = true;
+    }
+
+    if (!this.focusFingersDefined) {
+      vis.leapEventsService.setFocusFingers(['Index']);
+      let focusFingersDefined = true;
+    }
+
+    if (!this.gPointersCreated) {
+      vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
+      let gPointersCreated = true;
+    }
+
+    // Hover
+    if (frame.fingers.length > 0) {
+
+      // Update frame
+      vis.frame = frame;
+
+      // Get coords (index finger)
+      const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
+      const indexFinger = fingerCoords.find(f => f.name === 'Index');
+      vis.configs.hoverX = indexFinger.x;
+      vis.configs.hoverY = indexFinger.y;
+
+      // Update finger circs / pointers
+      vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
+    }
+
+    // Touch
+    const touchType = vis.leapEventsService.getTouchType(frame);
+    // console.log('Touch state------>>', touchType) // hovering, touching, not detected
+
+    // Trigger Zoom
+    vis.manageZoom(touchType)
+
   }
 
   /**

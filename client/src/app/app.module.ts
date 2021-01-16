@@ -14,6 +14,7 @@ import { ScatterViewSelectComponent } from './pages/scatter/scatter-view-select/
 import { LeapMotionComponent } from './pages/scatter/leap-motion/leap-motion.component';
 import { ScatterViewZoomComponent } from './pages/scatter/scatter-view-zoom/scatter-view-zoom.component';
 import { ScatterViewPanComponent } from './pages/scatter/scatter-view-pan/scatter-view-pan.component';
+import { ScatterViewLassoComponent } from './pages/scatter/scatter-view-lasso/scatter-view-lasso.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { ScatterViewPanComponent } from './pages/scatter/scatter-view-pan/scatte
     ScatterViewSelectComponent,
     LeapMotionComponent,
     ScatterViewZoomComponent,
-    ScatterViewPanComponent
+    ScatterViewPanComponent,
+    ScatterViewLassoComponent
   ],
   imports: [
     BrowserModule,
