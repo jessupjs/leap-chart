@@ -217,8 +217,8 @@ export class ScatterViewSelectComponent implements OnInit, AfterViewInit {
       }
 
       // Pinch status
-      const pinchState = vis.leapEventsService.getPinchState(frame);
-      console.log('Pinch state------>>', pinchState) // pinched, not pinched, not detected
+      const pinchState = vis.leapEventsService.getPinchState(frame, vis.controller, 10);
+      console.log('Pinch state------>>', pinchState) // pinched, not pinched, pinch opening, pinch closing, not detected
 
       if (pinchState === 'pinched') {
 

@@ -173,7 +173,7 @@ export class LeapEventsService {
   /**
    * getPinchState
    */
-  getPinchState(frame: any) {
+  getPinchState(frame: any, controller, historySamples = 10) {
 
     let pinchState = "not detected";
 
@@ -182,6 +182,17 @@ export class LeapEventsService {
 
         if (hand.pinchStrength === 1) pinchState = "pinched";
         else if (hand.pinchStrength < 1) pinchState = "not pinched";
+        else {
+          var sum = 0, s = 0;
+          for (var s = 0; s < historySamples; s++) {
+            var oldHand = controller.frame(s).hand(hand.id)
+            if (!oldHand.valid) break;
+            sum += oldHand.pinchStrength
+          }
+          var avg = sum / s;
+          if (hand.pinchStrength - avg < 0) pinchState = "pinch opening";
+          else if (hand.pinchStrength > 0) pinchState = "pinch closing";
+        }
 
       })
     }
