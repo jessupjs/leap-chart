@@ -196,11 +196,11 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
       this.modes.gesture = gesture;
 
-      if (gesture == 'zoom out' && !this.modes.zoom) {
-        this.modes.zoom = true;
+      if (gesture == 'zoom out' && !this.modes.zoomed) {
+        this.modes.zoomed = true;
         this.zoomOut();
-      } else if (gesture == 'zoom in' && this.modes.zoom) {
-        this.modes.zoom = false;
+      } else if (gesture == 'zoom in' && this.modes.zoomed) {
+        this.modes.zoomed = false;
         this.zoomIn();
       }      
     }
