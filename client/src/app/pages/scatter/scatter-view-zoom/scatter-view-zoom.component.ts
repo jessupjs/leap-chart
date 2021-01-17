@@ -45,8 +45,6 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
   // D3
   configs = {
-    centerX: 0,
-    centerY: 0,
     hoverX: 0,
     hoverY: 0
   };
@@ -79,9 +77,6 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
     // Get data
     this.data = this.getData();
-
-    // Add class svg name specific to gesture
-    this.className = 'zoom';
   }
 
   ngAfterViewInit() {
@@ -276,7 +271,7 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
    */
   zoomOut(): void {
 
-    // Reset scalees
+    // Reset scales
     this.child.tools.scX.domain(this.dataConfigs.inputX);
     this.child.tools.scY.domain(this.dataConfigs.inputY);
     this.child.tools.scR.range(this.dataConfigs.outputR);

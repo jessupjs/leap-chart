@@ -19,16 +19,35 @@ export class ScatterViewPanComponent implements OnInit {
   controller = null;
   data = [];
   dataConfigs = {
+    duration: 1500,
     inputR: [0, 100],
-    inputX: [0, 100],
-    inputY: [0, 100],
-    outputR: [0, 30],
+    inputX: [35, 65],
+    inputY: [35, 65],
+    outputR: [0, 5],
     unitX: 'Column',
     unitY: 'Row',
     unitR: 'Evilness'
   };
   frame = null;
+  modes = {
+    'zoomed': false,
+    'gesture': ''
+  }
   scalesetG: {};
+
+  // Setup tasks
+  scalesetCreated = false;
+  focusFingersDefined = false;
+  gPointersCreated = false;
+
+  // D3
+  configs = {
+    hoverX: 0,
+    hoverY: 0
+  };
+
+  // Add class svg name specific to gesture
+  className = 'pan';
 
   constructor(
     private leapEventsService: LeapEventsService
@@ -39,6 +58,12 @@ export class ScatterViewPanComponent implements OnInit {
 
     // Set board in thread
     this.components.views['pan'].instance = this;
+
+    // Update scatter board active component
+    this.components['board'].instance.activeComponent = this;
+
+    // Set controller
+    this.controller = this.components['board'].instance.controller;
 
     // Get data
     this.data = this.getData();
@@ -57,7 +82,60 @@ export class ScatterViewPanComponent implements OnInit {
    * getData
    */
   getData(): any[] {
-    return []
+
+    const collection = [];
+
+    for (let i = 10; i <= 90; i++) {
+
+      for (let j = 0; j < 10; j++) {
+
+        collection.push({
+          name: '',
+          x: Math.random() * 10 - 5 + i,
+          y: Math.random() * 10 - 5 + i,
+          r: Math.random() * 10 + 1,
+        });
+      }
+    }
+
+    return collection;
+  }
+
+  /**
+   * onFrame
+   */
+  onFrame(frame: any): void {
+
+    const vis = this;
+
+    // Set scales if not set
+    if (!this.scalesetCreated) {
+      vis.scalesetG = vis.leapEventsService.generateScaleset(frame, vis.child.els.g.node())
+      this.scalesetCreated = true;
+    }
+
+    if (!this.focusFingersDefined) {
+      vis.leapEventsService.setFocusFingers(['Index']);
+      let focusFingersDefined = true;
+    }
+
+    if (!this.gPointersCreated) {
+      vis.leapEventsService.generateContainerPointers(vis.child.els.pointersG, vis.child.configs.pointerCircR);
+      let gPointersCreated = true;
+    }
+
+    // Hover
+    if (frame.fingers.length > 0) {
+
+      // Update frame
+      vis.frame = frame;
+
+      // Get coords (index finger)
+      const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
+      const indexFinger = fingerCoords.find(f => f.name === 'Index');
+      vis.configs.hoverX = indexFinger.x;
+      vis.configs.hoverY = indexFinger.y;
+    }
   }
 
   /**

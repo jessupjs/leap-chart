@@ -12,7 +12,7 @@ export class ScatterPlotComponent implements OnInit {
   @Input() data: [any];
   @Input() dataConfigs: any;
   @Input() parent: any;
-  @Input() className: [any];
+  @Input() className: '';
   @Output() shareChild: EventEmitter<any> = new EventEmitter<any>();
 
   // HTML
@@ -112,7 +112,7 @@ export class ScatterPlotComponent implements OnInit {
       .domain(vis.dataConfigs.inputY)
       .range([vis.configs.gH, 0]);
 
-      // ..
+    // ..
     this.wrangle();
   }
 
@@ -120,6 +120,7 @@ export class ScatterPlotComponent implements OnInit {
    * wrangle
    */
   wrangle(): void {
+
     // This vis
     const vis = this;
 

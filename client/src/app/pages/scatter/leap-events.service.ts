@@ -39,7 +39,6 @@ export class LeapEventsService {
       .domain([containerRect.top, containerRect.top + containerRect.height])
       .range([0, containerRect.height]);
 
-
     return {
       'scLeapToWindowX': scLeapToWindowX,
       'scLeapToWindowY': scLeapToWindowY,

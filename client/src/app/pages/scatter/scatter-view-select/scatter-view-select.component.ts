@@ -85,7 +85,7 @@ export class ScatterViewSelectComponent implements OnInit {
     const gwSpace = Math.abs(gwDomain[0]) + Math.abs(gwDomain[1]);
     const ghSpace = Math.abs(ghDomain[0]) + Math.abs(ghDomain[1]);
     const grids = 10;
-    vis.sections = []
+    vis.sections = [];
     for (let i = 0; i < grids; i++) {
       for (let j = 0; j < grids; j++) {
         this.sections.push({
