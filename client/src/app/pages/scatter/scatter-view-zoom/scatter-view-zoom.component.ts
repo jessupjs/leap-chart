@@ -32,8 +32,8 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
   };
   frame = null;
   modes = {
-    'zoomed': false,
-    'gesture': ''
+    zoomed: false,
+    gesture: ''
   }
   scalesetG: {};
 
@@ -58,6 +58,9 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
   // Add class svg name specific to gesture
   className = 'zoom';
+
+  // Gesture
+  gestures = []
 
   constructor(
     private leapEventsService: LeapEventsService
@@ -187,16 +190,19 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
    *
    */
   manageZoom(gesture): void {
+    console.log('0 -----------zoom gesture--->>>', gesture)
 
     if (gesture !== this.modes.gesture) {
 
       this.modes.gesture = gesture;
 
-      if (gesture === 'touching') {
-        this.zoomIn();
-      } else if (gesture === 'hovering') {
+      if (gesture == 'zoom out' && !this.modes.zoom) {
+        this.modes.zoom = true;
         this.zoomOut();
-      }
+      } else if (gesture == 'zoom in' && this.modes.zoom) {
+        this.modes.zoom = false;
+        this.zoomIn();
+      }      
     }
   }
 
@@ -206,6 +212,8 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
   onFrame(frame: any): void {
 
     const vis = this;
+
+    vis.gestures = [];
 
     // Set scales if not set
     if (!this.scalesetCreated) {
@@ -243,8 +251,17 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
     const touchType = vis.leapEventsService.getTouchType(frame);
     // console.log('Touch state------>>', touchType) // hovering, touching, not detected
 
+    // zoom
+    const zoomType = vis.leapEventsService.getZoomType(frame, vis.controller, 10);
+    // console.log('zoom state------>>', zoomType ) // zoom in, zoom oit, not detected
+
+    // vis.gestures.push(touchType, pinchType)
+
     // Trigger Zoom
-    vis.manageZoom(touchType)
+    // vis.manageZoom(touchType)
+
+    // Trigger Zoom
+    vis.manageZoom(zoomType)
 
   }
 

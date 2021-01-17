@@ -171,9 +171,9 @@ export class LeapEventsService {
   }
 
   /**
-   * getPinchState
-   */
-  getPinchState(frame: any, controller, historySamples = 10) {
+  * getPinchType
+  */
+  getPinchType(frame: any, controller, historySamples = 10, option = 'basic') {
 
     let pinchState = "not detected";
 
@@ -181,8 +181,12 @@ export class LeapEventsService {
       frame.hands.forEach(function(hand) {
 
         if (hand.pinchStrength === 1) pinchState = "pinched";
-        else if (hand.pinchStrength < 1) pinchState = "not pinched";
-        else {
+
+        if (option === 'basic') {
+          if (hand.pinchStrength === 0) pinchState = "not pinched";
+        }
+
+        if (option === 'advanced') {
           var sum = 0;
           for (var s = 0; s < historySamples; s++) {
             var oldHand = controller.frame(s).hand(hand.id)
@@ -193,7 +197,6 @@ export class LeapEventsService {
           if (hand.pinchStrength - avg < 0) pinchState = "pinch opening";
           else if (hand.pinchStrength > 0) pinchState = "pinch closing";
         }
-
       })
     }
 
@@ -201,8 +204,8 @@ export class LeapEventsService {
   }
 
   /**
-   * getTouchState
-   */
+  * getTouchState
+  */
   getTouchType(frame: any) {
 
     let touchState = "not detected";
@@ -214,5 +217,29 @@ export class LeapEventsService {
     }
 
     return touchState;
+  }
+
+  /**
+  * getZOomType
+  */
+  getZoomType(frame: any, controller, historySamples = 10) {
+
+    let zoomState = "not detected";
+    let pinchState = "not detected";
+    let touchState = "not detected";
+
+    pinchState = this.getPinchType(frame, controller, 10, 'basic'); 
+    touchState = this.getTouchType(frame);
+
+    console.log('1------------', pinchState)
+    console.log('2------------', touchState)
+
+    if (pinchState === 'pinched' || touchState  === 'hovering') {
+      zoomState = 'zoom out'
+    } else if (pinchState === 'pinch opening' || touchState  === 'touching') { 
+      zoomState = 'zoom in'
+    }
+
+    return zoomState;
   }
 }
