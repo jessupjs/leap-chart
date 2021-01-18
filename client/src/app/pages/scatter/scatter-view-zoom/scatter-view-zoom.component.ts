@@ -248,7 +248,7 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
 
     // zoom
     const zoomType = vis.leapEventsService.getZoomType(frame, vis.controller, 10);
-    // console.log('zoom state------>>', zoomType ) // zoom in, zoom oit, not detected
+    // console.log('zoom state------>>', zoomType ) // zoom in, zoom out, not detected
 
     // Trigger Zoom
     vis.manageZoom(zoomType)
