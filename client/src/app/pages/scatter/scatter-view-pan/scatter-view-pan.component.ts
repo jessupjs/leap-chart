@@ -45,9 +45,7 @@ export class ScatterViewPanComponent implements OnInit {
   configs = {
     hoverX: 0,
     hoverY: 0,
-    centerX: 50,
-    centerY: 50,
-    offset: 15
+    offset: 5
   };
 
   // Add class svg name specific to gesture
@@ -172,18 +170,21 @@ export class ScatterViewPanComponent implements OnInit {
     if (gesture === 'closed') {
 
       // this.modes.grab = true;
-      var hrDomain = [];
-      var vrDomain = [];
+      let hrDomain = [];
+      let vrDomain = [];
+
+      const config = this.dataConfigs;
+      const offset = this.configs.offset;
 
       if (direction === 'left direction') { 
 
-        hrDomain = [this.dataConfigs.inputX[0] - 15, this.dataConfigs.inputX[1] - 15];
-        vrDomain = [this.dataConfigs.inputY[0] - 15, this.dataConfigs.inputY[1] - 15];
+        hrDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
+        vrDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
 
       } else if (direction === 'right direction') { 
 
-        hrDomain = [this.dataConfigs.inputX[0] + 15, this.dataConfigs.inputX[1] + 15];
-        vrDomain = [this.dataConfigs.inputY[0] + 15, this.dataConfigs.inputY[1] + 15];
+        hrDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
+        vrDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
       }
 
       this.moveElements(hrDomain, vrDomain)

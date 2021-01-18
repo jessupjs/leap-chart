@@ -15,6 +15,7 @@ import { LeapMotionComponent } from './pages/scatter/leap-motion/leap-motion.com
 import { ScatterViewZoomComponent } from './pages/scatter/scatter-view-zoom/scatter-view-zoom.component';
 import { ScatterViewPanComponent } from './pages/scatter/scatter-view-pan/scatter-view-pan.component';
 import { ScatterViewLassoComponent } from './pages/scatter/scatter-view-lasso/scatter-view-lasso.component';
+import { ScatterViewFilterComponent } from './pages/scatter/scatter-view-filter/scatter-view-filter.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ScatterViewLassoComponent } from './pages/scatter/scatter-view-lasso/sc
     LeapMotionComponent,
     ScatterViewZoomComponent,
     ScatterViewPanComponent,
-    ScatterViewLassoComponent
+    ScatterViewLassoComponent,
+    ScatterViewFilterComponent
   ],
   imports: [
     BrowserModule,
