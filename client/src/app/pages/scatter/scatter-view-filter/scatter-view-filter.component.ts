@@ -32,6 +32,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
   };
   filteredSections = [];
   frame = null;
+  sections = [];
   modes = {
     zoomed: false,
     gesture: ''
