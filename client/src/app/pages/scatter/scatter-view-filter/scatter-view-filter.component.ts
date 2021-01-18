@@ -226,7 +226,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
     const pos5 = [7.5, 25];
     const range5 = [5, 7.5];
     const rands5 = 25;
-    createCluster(pos5, range5, rands5, 'cat4');
+    createCluster(pos5, range5, rands5, 'cat1');
 
     const pos6 = [80, 80];
     const range6 = [7.5, 10];
