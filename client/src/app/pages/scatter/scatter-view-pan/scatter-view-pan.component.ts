@@ -1,5 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {LeapEventsService} from "../leap-events.service";
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-scatter-view-pan',
@@ -30,7 +31,7 @@ export class ScatterViewPanComponent implements OnInit {
   };
   frame = null;
   modes = {
-    // 'zoomed': false,
+    'grab': false,
     'gesture': ''
   }
   scalesetG: {};
@@ -138,38 +139,51 @@ export class ScatterViewPanComponent implements OnInit {
 
       // Update finger circs / pointers
       vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
-
-      // Grab status
-      const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
-
-      // Trigger Grab
-      vis.manageGrab(handState, indexFinger.x, indexFinger.y)
-
     }
+
+    // Grab status
+    const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
+
+    // Trigger Grab
+    vis.manageGrab(handState)
+
   }
 
   /**
-   *
-   */
+  *
+  */
   setChild(e: any): void {
     this.child = e;
   }
 
   /**
-   *
-   */
-  manageGrab(gesture, x, y): void {
+  *
+  */
+  manageGrab(gesture): void {
 
     // if (gesture !== this.modes.gesture) {
 
       // this.modes.gesture = gesture;
 
       if (gesture === 'closed') {
-        // move svg bubble
+
+        this.modes.grab = true;
+
+        // Check sub selections
+        const invX = this.child.tools.scX.invert(this.configs.hoverX);
+        const invY = this.child.tools.scY.invert(this.configs.hoverY);
+
+
         this.child.els.bubblesG
-          .attr('transform', `translate(${x}, ${y})`);
-      }      
+          .attr('transform', `translate(${this.configs.hoverX}, ${this.configs.hoverY})`);
+
+        
+      } else if (gesture === 'open') {
+
+        this.modes.grab = false;
+      }    
+
+
     // }
   }
-
 }

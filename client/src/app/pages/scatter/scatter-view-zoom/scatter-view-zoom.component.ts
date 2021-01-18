@@ -190,7 +190,6 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
    *
    */
   manageZoom(gesture): void {
-    console.log('0 -----------zoom gesture--->>>', gesture)
 
     if (gesture !== this.modes.gesture) {
 
@@ -247,18 +246,9 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
       vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
     }
 
-    // Touch
-    const touchType = vis.leapEventsService.getTouchType(frame);
-    // console.log('Touch state------>>', touchType) // hovering, touching, not detected
-
     // zoom
     const zoomType = vis.leapEventsService.getZoomType(frame, vis.controller, 10);
     // console.log('zoom state------>>', zoomType ) // zoom in, zoom oit, not detected
-
-    // vis.gestures.push(touchType, pinchType)
-
-    // Trigger Zoom
-    // vis.manageZoom(touchType)
 
     // Trigger Zoom
     vis.manageZoom(zoomType)
