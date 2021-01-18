@@ -44,7 +44,10 @@ export class ScatterViewPanComponent implements OnInit {
   // D3
   configs = {
     hoverX: 0,
-    hoverY: 0
+    hoverY: 0,
+    centerX: 50,
+    centerY: 50,
+    offset: 15
   };
 
   // Add class svg name specific to gesture
@@ -141,11 +144,16 @@ export class ScatterViewPanComponent implements OnInit {
       vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
     }
 
+    // pointer direction
+    const pointerDirection = vis.leapEventsService.pointerDirection(frame, vis.controller, 10);
+
+    console.log('-------d------>', pointerDirection)
+
     // Grab status
     const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
 
     // Trigger Grab
-    vis.manageGrab(handState)
+    vis.manageGrab(handState, pointerDirection)
 
   }
 
@@ -159,31 +167,43 @@ export class ScatterViewPanComponent implements OnInit {
   /**
   *
   */
-  manageGrab(gesture): void {
+  manageGrab(gesture, direction): void {
 
-    // if (gesture !== this.modes.gesture) {
+    if (gesture === 'closed') {
 
-      // this.modes.gesture = gesture;
+      // this.modes.grab = true;
+      var hrDomain = [];
+      var vrDomain = [];
 
-      if (gesture === 'closed') {
+      if (direction === 'left direction') { 
 
-        this.modes.grab = true;
+        hrDomain = [this.dataConfigs.inputX[0] - 15, this.dataConfigs.inputX[1] - 15];
+        vrDomain = [this.dataConfigs.inputY[0] - 15, this.dataConfigs.inputY[1] - 15];
 
-        // Check sub selections
-        const invX = this.child.tools.scX.invert(this.configs.hoverX);
-        const invY = this.child.tools.scY.invert(this.configs.hoverY);
+      } else if (direction === 'right direction') { 
 
+        hrDomain = [this.dataConfigs.inputX[0] + 15, this.dataConfigs.inputX[1] + 15];
+        vrDomain = [this.dataConfigs.inputY[0] + 15, this.dataConfigs.inputY[1] + 15];
+      }
 
-        this.child.els.bubblesG
-          .attr('transform', `translate(${this.configs.hoverX}, ${this.configs.hoverY})`);
+      this.moveElements(hrDomain, vrDomain)
 
-        
-      } else if (gesture === 'open') {
+    } else if ((gesture === 'open' || gesture === 'not detected') && this.modes.grab) {
 
-        this.modes.grab = false;
-      }    
+      this.modes.grab = false;
 
+    }
+  }
 
-    // }
+  /**
+  *
+  */
+  moveElements(hrDomain, vrDomain): void {
+
+    // Update scales
+    this.child.tools.scX.domain(hrDomain);
+    this.child.tools.scY.domain(vrDomain);
+
+    this.child.wrangle();
   }
 }

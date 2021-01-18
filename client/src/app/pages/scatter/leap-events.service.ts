@@ -15,6 +15,7 @@ export class LeapEventsService {
     {name: 'Pinky', index: 4}
   ];
   focusFingers = [];
+  lastAvg = 0;
 
   constructor() {
   }
@@ -231,9 +232,6 @@ export class LeapEventsService {
     pinchState = this.getPinchType(frame, controller, 10, 'basic'); 
     touchState = this.getTouchType(frame);
 
-    console.log('1------------', pinchState)
-    console.log('2------------', touchState)
-
     if (pinchState === 'pinched' || touchState  === 'hovering') {
       zoomState = 'zoom out'
     } else if (pinchState === 'pinch opening' || touchState  === 'touching') { 
@@ -243,5 +241,37 @@ export class LeapEventsService {
     return zoomState;
   }
 
+  /**
+  * pointerDirection
+  */
+  pointerDirection(frame: any, controller, historySamples = 10) {
 
+    let pointerDirection = "not detected";
+    
+
+    if(frame.valid && frame.fingers.length > 0) {
+
+      var fingerToAverage = frame.fingers[1];
+      var sum = 0;
+
+      for(var i = 0; i < 10; i++ ) {
+
+        var fingerFromFrame = controller.frame(i).finger(fingerToAverage.id);
+        if( fingerFromFrame.valid ) {
+          sum += fingerFromFrame.tipPosition[0]
+        }
+      }
+
+      var avg = sum / i;
+
+      if (avg < this.lastAvg) pointerDirection = "left direction";
+        else if (avg > this.lastAvg) pointerDirection = "right direction";
+
+      this.lastAvg = avg;
+
+    }
+
+    return pointerDirection;
+
+  }
 }
