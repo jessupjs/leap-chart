@@ -30,7 +30,7 @@ export class ScatterViewPanComponent implements OnInit {
   };
   frame = null;
   modes = {
-    'zoomed': false,
+    // 'zoomed': false,
     'gesture': ''
   }
   scalesetG: {};
@@ -135,6 +135,16 @@ export class ScatterViewPanComponent implements OnInit {
       const indexFinger = fingerCoords.find(f => f.name === 'Index');
       vis.configs.hoverX = indexFinger.x;
       vis.configs.hoverY = indexFinger.y;
+
+      // Update finger circs / pointers
+      vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
+
+      // Grab status
+      const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
+
+      // Trigger Grab
+      vis.manageGrab(handState, indexFinger.x, indexFinger.y)
+
     }
   }
 
@@ -143,6 +153,23 @@ export class ScatterViewPanComponent implements OnInit {
    */
   setChild(e: any): void {
     this.child = e;
+  }
+
+  /**
+   *
+   */
+  manageGrab(gesture, x, y): void {
+
+    // if (gesture !== this.modes.gesture) {
+
+      // this.modes.gesture = gesture;
+
+      if (gesture === 'closed') {
+        // move svg bubble
+        this.child.els.bubblesG
+          .attr('transform', `translate(${x}, ${y})`);
+      }      
+    // }
   }
 
 }

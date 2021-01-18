@@ -154,7 +154,7 @@ export class LeapEventsService {
 
         if (hand.grabStrength === 1) handState = "closed";
         else if (hand.grabStrength === 0) handState = "open";
-        else {
+        /*else {
           var sum = 0;
           for (var s = 0; s < historySamples; s++) {
             var oldHand = controller.frame(s).hand(hand.id)
@@ -164,7 +164,7 @@ export class LeapEventsService {
           var avg = sum / s;
           if (hand.grabStrength - avg < 0) handState = "opening";
           else if (hand.grabStrength > 0) handState = "closing";
-        }
+        }*/
       })
     }
     return handState;
@@ -242,4 +242,6 @@ export class LeapEventsService {
 
     return zoomState;
   }
+
+
 }
