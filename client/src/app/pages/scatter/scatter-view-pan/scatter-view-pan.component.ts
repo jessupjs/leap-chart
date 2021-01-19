@@ -45,7 +45,7 @@ export class ScatterViewPanComponent implements OnInit {
   configs = {
     hoverX: 0,
     hoverY: 0,
-    offset: 5
+    offset: 15
   };
 
   // Add class svg name specific to gesture
