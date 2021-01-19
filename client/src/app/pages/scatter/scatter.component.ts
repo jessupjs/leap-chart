@@ -43,7 +43,7 @@ export class ScatterComponent implements OnInit, AfterViewInit {
       },
       'filter': {
         copy: 'Need more story ...',
-        title: 'Part 4. (filter)',
+        title: 'Part 4. (z-axis panning)',
         instance: null,
         selected: false
       },
