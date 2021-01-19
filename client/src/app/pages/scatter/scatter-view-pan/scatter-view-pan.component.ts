@@ -91,7 +91,7 @@ export class ScatterViewPanComponent implements OnInit {
       for (let j = 0; j < 10; j++) {
 
         collection.push({
-          name: '',
+          name: 'cat0',
           x: Math.random() * 10 - 5 + i,
           y: Math.random() * 10 - 5 + i,
           r: Math.random() * 10 + 1,

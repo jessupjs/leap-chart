@@ -314,4 +314,26 @@ export class LeapEventsService {
 
     return direction;
   }
+
+  /**
+  * Hand Sphere
+  */
+  getHandSphere(frame: any) {
+
+    let sphere = [];
+
+    if (frame && frame.hands && frame.hands.length > 0) {
+
+      frame.hands.forEach(function(hand) {
+
+        var center = hand.sphereCenter;
+        var radius = hand.sphereRadius;
+
+        sphere = [center[0], center[1], center[2], radius]
+
+      })
+    }
+
+    return sphere;
+  }
 }

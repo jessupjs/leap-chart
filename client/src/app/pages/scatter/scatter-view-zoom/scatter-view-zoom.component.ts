@@ -120,7 +120,7 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
     const rands1 = 100;
     for (let i = 0; i < rands1; i++) {
       collection.push({
-        name: '',
+        name: 'cat0',
         x: Math.random() * this.dataConfigs.inputX[1],
         y: Math.random() * this.dataConfigs.inputY[1],
         r: Math.random() * this.dataConfigs.inputR[1] * 0.1,
@@ -132,7 +132,7 @@ export class ScatterViewZoomComponent implements OnInit, AfterViewInit {
         const w = range[0] * 2;
         const h = range[1] * 2;
         const obj = {
-          name: '',
+          name: 'cat0',
           x: Math.random() * w + (pos[0] - range[0]),
           y: Math.random() * h + (pos[1] - range[1]),
           r: Math.random() * vis.dataConfigs.inputR[1],

@@ -162,6 +162,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
    * colorTarget
    */
   colorTarget(cat): void {
+  	console.log('cat----', cat)
     this.child.els.bubblesG.selectAll('circle')
       .each(function(d, i) {
         if (d.name === cat) {
@@ -185,7 +186,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
     const rands1 = 100;
     for (let i = 0; i < rands1; i++) {
       collection.push({
-        name: '',
+        name: 'cat0',
         x: Math.random() * this.dataConfigs.inputX[1],
         y: Math.random() * this.dataConfigs.inputY[1],
         r: Math.random() * this.dataConfigs.inputR[1] * 0.1,
@@ -214,25 +215,35 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
     const rands2 = 75;
     createCluster(pos2, range2, rands2, 'cat1');
 
-    const pos3 = [5, 40];
+    const pos3 = [15, 140];
     const range3 = [15, 25];
-    const rands3 = 100;
+    const rands3 = 110;
     createCluster(pos3, range3, rands3, 'cat2');
 
     const pos4 = [90, 15];
     const range4 = [5, 10];
     const rands4 = 50;
-    createCluster(pos4, range4, rands4, 'cat1');
+    createCluster(pos4, range4, rands4, 'cat3');
 
     const pos5 = [7.5, 25];
     const range5 = [5, 7.5];
     const rands5 = 25;
-    createCluster(pos5, range5, rands5, 'cat1');
+    createCluster(pos5, range5, rands5, 'cat4');
 
     const pos6 = [80, 80];
     const range6 = [7.5, 10];
     const rands6 = 38;
     createCluster(pos6, range6, rands6, 'cat5');
+
+    const pos7 = [60, 60];
+    const range7 = [7.5, 10];
+    const rands7 = 38;
+    createCluster(pos7, range7, rands7, 'cat6');
+
+    const pos8 = [40, 60];
+    const range8 = [7.5, 50];
+    const rands8 = 68;
+    createCluster(pos8, range8, rands8, 'cat7');
 
     return collection;
   }
@@ -302,6 +313,9 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
       })
       vis.searchableNames = Array.from(new Set(vis.searchableNames));
 
+      // getHandSphere
+      const handSphere = vis.leapEventsService.getHandSphere(frame);
+
       // Iterate bubbles
       // Fixme - need to label bubbles by grid
       vis.child.els.bubblesG.selectAll('.bubble')
@@ -310,32 +324,27 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
             // if (vis.nameSelected === d.name) {
               // return 'rgb(255, 0, 0)';
             // }
-            if (vis.searchableNames.includes(d.name)) {
+            // if (vis.searchableNames.includes(d.name)) {
               const x = d3.select(this).attr('cx');
               const y = d3.select(this).attr('cy');
               const r = d3.select(this).attr('r');
-              const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
-              if (dist <= r) {
-                vis.nameHovered = d.name;
-                // return 'rgb(255,200,0)';
-              }
+              // const dist = Math.sqrt((handSphere[0] - x) ** 2 + (handSphere[1] - y) ** 2);
+              if ((handSphere[0] + handSphere[2] * 10) < x && x > (handSphere[0] - handSphere[2] * 10)
+              	&& (handSphere[1] + handSphere[2] * 10) < y && y > (handSphere[1] - handSphere[2] * 10)
+              ) { 
+
+              // if (dist <= r) {
+                // vis.nameHovered = d.name;
+                return 'rgb(255,200,0)';
+              // }
             } else {
-              // return 'rgb(0, 0, 0)';
+              return 'rgb(0, 0, 0)';
             }
           })
         })
     }
-
-    // zoom
-    const zoomType = vis.leapEventsService.getZoomType(frame, vis.controller, 10);
-    console.log('2 zoom state------>>', zoomType, vis.nameHovered ) // zoom in, zoom oit, not detected
-
-    // Trigger filter
-  
-    if (zoomType == 'zoom in') {
-    	vis.colorTarget(vis.nameHovered)
-    }
   }
 
 }
+
 

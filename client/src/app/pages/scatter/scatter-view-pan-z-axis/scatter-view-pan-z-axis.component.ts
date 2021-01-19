@@ -185,7 +185,7 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
     const rands1 = 100;
     for (let i = 0; i < rands1; i++) {
       collection.push({
-        name: '',
+        name: 'cat0',
         x: Math.random() * this.dataConfigs.inputX[1],
         y: Math.random() * this.dataConfigs.inputY[1],
         r: Math.random() * this.dataConfigs.inputR[1] * 0.1,

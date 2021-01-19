@@ -93,7 +93,7 @@ export class ScatterViewSwipeComponent implements OnInit {
       for (let j = 0; j < 20; j++) {
 
         collection.push({
-          name: '',
+          name: 'cat0',
           x: Math.random() * 10 - 5 + i,
           y: Math.random() * Math.floor(7) * 10 - 5 + i,
           r: Math.random() * 10 + 1,
