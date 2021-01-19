@@ -170,24 +170,24 @@ export class ScatterViewPanComponent implements OnInit {
     if (gesture === 'closed') {
 
       // this.modes.grab = true;
-      let hrDomain = [];
-      let vrDomain = [];
+      let xDomain = [];
+      let yDomain = [];
 
       const config = this.dataConfigs;
       const offset = this.configs.offset;
 
       if (direction === 'left direction') { 
 
-        hrDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
-        vrDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
+        xDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
+        yDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
 
       } else if (direction === 'right direction') { 
 
-        hrDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
-        vrDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
+        xDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
+        yDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
       }
 
-      this.moveElements(hrDomain, vrDomain)
+      this.moveElements(xDomain, yDomain)
 
     } else if ((gesture === 'open' || gesture === 'not detected') && this.modes.grab) {
 
@@ -199,11 +199,11 @@ export class ScatterViewPanComponent implements OnInit {
   /**
   *
   */
-  moveElements(hrDomain, vrDomain): void {
+  moveElements(xDomain, yDomain): void {
 
     // Update scales
-    this.child.tools.scX.domain(hrDomain);
-    this.child.tools.scY.domain(vrDomain);
+    this.child.tools.scX.domain(xDomain);
+    this.child.tools.scY.domain(yDomain);
 
     this.child.wrangle();
   }
