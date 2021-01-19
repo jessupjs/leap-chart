@@ -1,0 +1,11 @@
+<div id="container">
+
+  <app-scatter-plot
+    [data]="data"
+    [dataConfigs]="dataConfigs"
+    [parent]="this"
+    (shareChild)="setChild($event)"
+    [className]="className"
+  ></app-scatter-plot>
+
+</div>

@@ -16,6 +16,9 @@ import { ScatterViewZoomComponent } from './pages/scatter/scatter-view-zoom/scat
 import { ScatterViewPanComponent } from './pages/scatter/scatter-view-pan/scatter-view-pan.component';
 import { ScatterViewLassoComponent } from './pages/scatter/scatter-view-lasso/scatter-view-lasso.component';
 import { ScatterViewFilterComponent } from './pages/scatter/scatter-view-filter/scatter-view-filter.component';
+import { ScatterViewPanZAxisComponent } from './pages/scatter/scatter-view-pan-z-axis/scatter-view-pan-z-axis.component';
+import { ScatterViewRotateComponent } from './pages/scatter/scatter-view-rotate/scatter-view-rotate.component';
+import { ScatterViewSwipeComponent } from './pages/scatter/scatter-view-swipe/scatter-view-swipe.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,10 @@ import { ScatterViewFilterComponent } from './pages/scatter/scatter-view-filter/
     ScatterViewZoomComponent,
     ScatterViewPanComponent,
     ScatterViewLassoComponent,
-    ScatterViewFilterComponent
+    ScatterViewFilterComponent,
+    ScatterViewPanZAxisComponent,
+    ScatterViewRotateComponent,
+    ScatterViewSwipeComponent
   ],
   imports: [
     BrowserModule,

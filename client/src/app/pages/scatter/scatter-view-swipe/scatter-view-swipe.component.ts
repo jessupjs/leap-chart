@@ -2,11 +2,11 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {LeapEventsService} from "../leap-events.service";
 
 @Component({
-  selector: 'app-scatter-view-pan',
-  templateUrl: './scatter-view-pan.component.html',
-  styleUrls: ['./scatter-view-pan.component.scss']
+  selector: 'app-scatter-view-swipe',
+  templateUrl: './scatter-view-swipe.component.html',
+  styleUrls: ['./scatter-view-swipe.component.scss']
 })
-export class ScatterViewPanComponent implements OnInit {
+export class ScatterViewSwipeComponent implements OnInit {
 
   // Input, output
   @Input() components: any;
@@ -68,6 +68,8 @@ export class ScatterViewPanComponent implements OnInit {
 
     // Get data
     this.data = this.getData();
+
+    console.log('data-----', this.data)
   }
 
   /**
@@ -88,12 +90,12 @@ export class ScatterViewPanComponent implements OnInit {
 
     for (let i = 10; i <= 90; i++) {
 
-      for (let j = 0; j < 10; j++) {
+      for (let j = 0; j < 20; j++) {
 
         collection.push({
           name: '',
           x: Math.random() * 10 - 5 + i,
-          y: Math.random() * 10 - 5 + i,
+          y: Math.random() * Math.floor(7) * 10 - 5 + i,
           r: Math.random() * 10 + 1,
         });
       }
@@ -141,14 +143,11 @@ export class ScatterViewPanComponent implements OnInit {
       vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
     }
 
-    // pointer direction
-    const pointerDirection = vis.leapEventsService.getPointerDirection(frame, vis.controller, 10);
+    // swipe direction
+    const swipeDirection = vis.leapEventsService.getSwipeDirection(frame);
 
-    // Grab status
-    const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
-
-    // Trigger Grab
-    vis.manageGrab(handState, pointerDirection)
+    // Trigger swipe
+    vis.manageSwipe(swipeDirection)
 
   }
 
@@ -162,36 +161,28 @@ export class ScatterViewPanComponent implements OnInit {
   /**
   *
   */
-  manageGrab(gesture, direction): void {
+  manageSwipe(direction): void {
 
-    if (gesture === 'closed') {
+  	let xDomain = [];
+    let yDomain = [];
 
-      this.modes.grab = true;
-      let xDomain = [];
-      let yDomain = [];
+	const config = this.dataConfigs;
+	const offset = this.configs.offset;
 
-      const config = this.dataConfigs;
-      const offset = this.configs.offset;
-
-      if (direction === 'left direction') { 
+	if (direction === 'left direction') { 
 
         xDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
         yDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
 
-      } else if (direction === 'right direction') { 
+        this.moveElements(xDomain, yDomain);
 
-        xDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
-        yDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
-      }
+	} else if (direction === 'right direction') { 
 
-      this.moveElements(xDomain, yDomain);
+		xDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
+		yDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
 
-    } else if ((gesture === 'open' || gesture === 'not detected') && this.modes.grab) {
-
-      this.modes.grab = false;
-      
-      this.defaultElements();
-    }
+		this.moveElements(xDomain, yDomain);
+	}
   }
 
   /**
@@ -202,18 +193,6 @@ export class ScatterViewPanComponent implements OnInit {
     // Update scales
     this.child.tools.scX.domain(xDomain);
     this.child.tools.scY.domain(yDomain);
-
-    this.child.tools.scR.range([0, 25]);
-
-    this.child.wrangle();
-  }
-
-  /**
-  *
-  */
-  defaultElements(): void {
-
-    this.child.tools.scR.range(this.dataConfigs.outputR);
 
     this.child.wrangle();
   }

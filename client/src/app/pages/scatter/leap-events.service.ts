@@ -244,11 +244,10 @@ export class LeapEventsService {
   /**
   * pointerDirection
   */
-  pointerDirection(frame: any, controller, historySamples = 10) {
+  getPointerDirection(frame: any, controller, historySamples = 10) {
 
     let pointerDirection = "not detected";
     
-
     if(frame.valid && frame.fingers.length > 0) {
 
       var fingerToAverage = frame.fingers[1];
@@ -272,6 +271,47 @@ export class LeapEventsService {
     }
 
     return pointerDirection;
+  }
 
+
+  /**
+  * swipeDirection
+  */
+  getSwipeDirection(frame: any) {
+
+    let direction = "not detected";
+
+    if (frame.data.gestures.length > 0) {
+      for (var i = 0; i < frame.data.gestures.length; i++) {
+
+        var gesture = frame.data.gestures[i];
+        var swipeDirection = '';
+
+        if(gesture.type == "swipe") {
+          
+          // Either horizontal or vertical
+          var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
+          
+          // Right-left or up-down
+          if(isHorizontal){
+            if(gesture.direction[0] > 0){
+              swipeDirection = "right direction";
+            } else {
+              swipeDirection = "left direction";
+            }
+          } else { //vertical
+            if(gesture.direction[1] > 0){
+              swipeDirection = "up direction";
+            } else {
+              swipeDirection = "down direction";
+            }                  
+          }
+
+          direction = swipeDirection;
+         }
+      }
+    }
+
+    return direction;
   }
 }

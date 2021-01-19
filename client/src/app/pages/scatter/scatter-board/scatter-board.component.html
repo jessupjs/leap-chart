@@ -14,6 +14,12 @@
     <app-scatter-view-pan *ngIf="components.views['pan'].selected"
       [components]="components"
     ></app-scatter-view-pan>
+    <app-scatter-view-pan-z-axis *ngIf="components.views['pan-z-axis'].selected"
+      [components]="components"
+    ></app-scatter-view-pan-z-axis>
+    <app-scatter-view-swipe *ngIf="components.views['swipe'].selected"
+      [components]="components"
+    ></app-scatter-view-swipe>
     <app-scatter-view-filter *ngIf="components.views['filter'].selected"
       [components]="components"
     ></app-scatter-view-filter>
