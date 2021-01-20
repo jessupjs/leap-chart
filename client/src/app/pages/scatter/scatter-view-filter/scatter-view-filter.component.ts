@@ -73,7 +73,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
   	'cat2-m': 'rgb(0, 0, 204)',
   	'cat3-m': 'rgb(255, 153, 51)',
   	'cat4-m': 'rgb(255, 0, 127)',
-  	'cat5-m': 'rgb(0, 204, 204)',
+  	'cat5-m': 'rgb(102, 0, 0)',
   	'cat6-m': 'rgb(153, 153, 0)',
   	'cat7-m': 'rgb(0, 255, 255)',
   }
