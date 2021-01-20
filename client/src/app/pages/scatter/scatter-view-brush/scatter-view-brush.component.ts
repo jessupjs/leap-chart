@@ -207,7 +207,7 @@ export class ScatterViewBrushComponent implements OnInit {
           name: cat,
           x: Math.random() * w + (pos[0] - range[0]),
           y: Math.random() * h + (pos[1] - range[1]),
-          r: Math.random() * 2 * vis.dataConfigs.inputR[1],
+          r: Math.random() * 30 * vis.dataConfigs.inputR[1],
         }
         const passedTest = ((obj.x - pos[0]) ** 2 / range[0] ** 2) + ((obj.y - pos[1]) ** 2 / range[1] ** 2) <= 1;
         if (passedTest) {
@@ -218,17 +218,17 @@ export class ScatterViewBrushComponent implements OnInit {
 
     const pos2 = [10, 75];
     const range2 = [7.5, 30];
-    const rands2 = 45;
+    const rands2 = 35;
     createCluster(pos2, range2, rands2, 'cat1');
 
     const pos3 = [50, 40];
     const range3 = [15, 25];
-    const rands3 = 40;
+    const rands3 = 30;
     createCluster(pos3, range3, rands3, 'cat2');
 
     const pos6 = [80, 80];
     const range6 = [7.5, 10];
-    const rands6 = 38;
+    const rands6 = 28;
     createCluster(pos6, range6, rands6, 'cat3');
 
     // marker
