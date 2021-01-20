@@ -48,7 +48,7 @@ export class ScatterViewSwipeComponent implements OnInit {
   };
 
   // Add class svg name specific to gesture
-  className = 'pan';
+  className = 'swipe';
 
   constructor(
     private leapEventsService: LeapEventsService
@@ -68,8 +68,6 @@ export class ScatterViewSwipeComponent implements OnInit {
 
     // Get data
     this.data = this.getData();
-
-    console.log('data-----', this.data)
   }
 
   /**
