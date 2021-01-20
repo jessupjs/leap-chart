@@ -58,6 +58,27 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
     zoom: null
   };
 
+  // TODO: Quick solution, need cleanup
+  colors = {
+  	cat0: 'rgb(255, 0, 0)',
+  	cat1: 'rgb(0, 153, 0)',
+  	cat2: 'rgb(0, 0, 204)',
+  	cat3: 'rgb(255, 153, 51)',
+  	cat4: 'rgb(0, 0, 204)',
+  	cat5: 'rgb(102, 0, 0)',
+  	cat6: 'rgb(153, 153, 0)',
+  	cat7: 'rgb(0, 255, 255)',
+  	'cat0-m': 'rgb(255, 0, 0)',
+  	'cat1-m': 'rgb(0, 153, 0)',
+  	'cat2-m': 'rgb(0, 0, 204)',
+  	'cat3-m': 'rgb(255, 153, 51)',
+  	'cat4-m': 'rgb(255, 0, 127)',
+  	'cat5-m': 'rgb(0, 204, 204)',
+  	'cat6-m': 'rgb(153, 153, 0)',
+  	'cat7-m': 'rgb(0, 255, 255)',
+  }
+
+
   // Class vars (unique)
   nameHovered = '';
   nameSelected = '';
@@ -93,8 +114,15 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-    // Color target
-    // this.colorTarget('cat1');
+    // category color target
+    this.colorTarget('cat0-m');
+    this.colorTarget('cat1-m');
+    this.colorTarget('cat2-m');
+    this.colorTarget('cat3-m');
+    this.colorTarget('cat4-m');
+    this.colorTarget('cat5-m');
+    this.colorTarget('cat6-m');
+    this.colorTarget('cat7-m');
   }
 
   /**
@@ -162,12 +190,12 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
    * colorTarget
    */
   colorTarget(cat): void {
-  	console.log('cat----', cat)
+  	const vis = this;
     this.child.els.bubblesG.selectAll('circle')
       .each(function(d, i) {
         if (d.name === cat) {
           d3.select(this)
-            .attr('fill', 'rgba(255, 0, 0, 1)')
+            .attr('fill', vis.colors[cat])
         }
       })
 
@@ -215,11 +243,6 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
     const rands2 = 75;
     createCluster(pos2, range2, rands2, 'cat1');
 
-    const pos3 = [15, 140];
-    const range3 = [15, 25];
-    const rands3 = 110;
-    createCluster(pos3, range3, rands3, 'cat2');
-
     const pos4 = [90, 15];
     const range4 = [5, 10];
     const rands4 = 50;
@@ -244,6 +267,58 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
     const range8 = [7.5, 50];
     const rands8 = 68;
     createCluster(pos8, range8, rands8, 'cat7');
+
+    // marker
+    collection.push(
+      {
+        name: 'cat0-m', // red
+        x: 26,
+        y: 24,
+        r: 120,
+      },
+      {
+        name: 'cat1-m', // green
+        x: 10,
+        y: 84,
+        r: 160,
+      },
+      {
+        name: 'cat2-m', // blue
+        x: 6,
+        y: 24,
+        r: 160,
+      },
+      {
+        name: 'cat3-m', // orange
+        x: 86,
+        y: 14,
+        r: 160,
+      },
+      {
+        name: 'cat4-m', // sky
+        x: 86,
+        y: 84,
+        r: 160,
+      },
+      {
+        name: 'cat5-m',
+        x: 86,
+        y: 84,
+        r: 160,
+      },
+      {
+        name: 'cat6-m', // green-2
+        x: 56,
+        y: 54,
+        r: 160,
+      },
+      {
+        name: 'cat7-m',
+        x: 36,
+        y: 34,
+        r: 160,
+      }
+    );
 
     return collection;
   }
@@ -318,7 +393,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
 
       // Iterate bubbles
       // Fixme - need to label bubbles by grid
-      vis.child.els.bubblesG.selectAll('.bubble')
+      /* vis.child.els.bubblesG.selectAll('.bubble')
         .each(function(d) {
           d3.select(this).attr('fill', d => {
             // if (vis.nameSelected === d.name) {
@@ -329,8 +404,8 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
               const y = d3.select(this).attr('cy');
               const r = d3.select(this).attr('r');
               // const dist = Math.sqrt((handSphere[0] - x) ** 2 + (handSphere[1] - y) ** 2);
-              if ((handSphere[0] + handSphere[2] * 10) < x && x > (handSphere[0] - handSphere[2] * 10)
-              	&& (handSphere[1] + handSphere[2] * 10) < y && y > (handSphere[1] - handSphere[2] * 10)
+              if ((handSphere[0] + handSphere[2] * 40) < x && x > (handSphere[0] - handSphere[2] * 40)
+              	&& (handSphere[1] + handSphere[2] * 40) < y && y > (handSphere[1] - handSphere[2] * 40)
               ) { 
 
               // if (dist <= r) {
@@ -341,7 +416,44 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
               return 'rgb(0, 0, 0)';
             }
           })
+        }) */
+
+        // Iterate bubbles
+      // Fixme - need to label bubbles by grid
+      vis.child.els.bubblesG.selectAll('.bubble')
+        .each(function(d) {
+          d3.select(this).attr('fill', d => {
+            // if (vis.nameSelected === d.name) {
+              // return 'rgb(255, 0, 0)';
+            // }
+            if (vis.searchableNames.includes(d.name)) {
+              const x = d3.select(this).attr('cx');
+              const y = d3.select(this).attr('cy');
+              const r = d3.select(this).attr('r');
+              const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
+              if (dist <= r) {
+                vis.nameHovered = d.name;
+                // return 'rgb(255,200,0)';
+              }
+            } else {
+              // return 'rgb(0, 0, 0)';
+            }
+          })
         })
+
+        console.log('77777---->', vis.nameHovered)
+
+        vis.colorTarget(vis.nameHovered)
+
+        vis.colorTarget('cat0-m');
+	    vis.colorTarget('cat1-m');
+	    vis.colorTarget('cat2-m');
+	    vis.colorTarget('cat3-m');
+	    vis.colorTarget('cat4-m');
+	    vis.colorTarget('cat5-m');
+	    vis.colorTarget('cat6-m');
+	    vis.colorTarget('cat7-m');
+
     }
   }
 

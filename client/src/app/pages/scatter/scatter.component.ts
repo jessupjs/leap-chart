@@ -47,21 +47,9 @@ export class ScatterComponent implements OnInit, AfterViewInit {
         instance: null,
         selected: false
       },
-      'swipe': {
-        copy: 'Need more story ...',
-        title: 'Part 5. (swipe)',
-        instance: null,
-        selected: false
-      },
       'filter': {
         copy: 'Need more story ...',
-        title: 'Part 6. (filter)',
-        instance: null,
-        selected: false
-      },
-      'lasso': {
-        copy: 'Need more story ...',
-        title: 'Part 7. (lasso)',
+        title: 'Part 5. (filter)',
         instance: null,
         selected: false
       },

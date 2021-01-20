@@ -58,6 +58,18 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
     zoom: null
   };
 
+  // TODO: Quick solution, need cleanup
+  colors = {
+  	cat0: 'rgb(255, 0, 0)',
+  	cat1: 'rgb(0, 153, 0)',
+  	cat2: 'rgb(0, 0, 204)',
+  	cat3: 'rgb(255, 153, 51)',
+  	'cat0-m': 'rgb(255, 0, 0)',
+  	'cat1-m': 'rgb(0, 153, 0)',
+  	'cat2-m': 'rgb(0, 0, 204)',
+  	'cat3-m': 'rgb(255, 153, 51)'
+  }
+
   // Class vars (unique)
   nameHovered = '';
   nameSelected = '';
@@ -94,7 +106,10 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     // Color target
-    // this.colorTarget('cat1');
+    // this.colorTarget('cat0-m');
+    // this.colorTarget('cat1-m');
+    // this.colorTarget('cat2-m');
+    // this.colorTarget('cat3-m');
   }
 
   /**
@@ -154,7 +169,7 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.filteredSections = this.sections.filter(s => s.members.length > 0 || s.possibleMembers.length > 0);
+    this.filteredSections = this.sections.filter(s => s.members.length > 0 || s.possibleMembers.length > 0)
 
   }
 
@@ -162,15 +177,14 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
    * colorTarget
    */
   colorTarget(cat): void {
-    this.child.els.bubblesG.selectAll('circle')
+  	const vis = this;
+    this.child.els.bubblesG.selectAll('.bubble')
       .each(function(d, i) {
         if (d.name === cat) {
-          d3.select(this)
-            .attr('fill', 'rgba(255, 0, 0, 1)')
+          	d3.select(this)
+            	.attr('fill', vis.colors[cat])
         }
       })
-
-
   }
 
   /**
@@ -232,7 +246,35 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
     const pos6 = [80, 80];
     const range6 = [7.5, 10];
     const rands6 = 38;
-    createCluster(pos6, range6, rands6, 'cat5');
+    createCluster(pos6, range6, rands6, 'cat3');
+
+    // marker
+    collection.push(
+      {
+        name: 'cat0-m',
+        x: 26,
+        y: 24,
+        r: 20,
+      },
+      {
+        name: 'cat1-m',
+        x: 10,
+        y: 84,
+        r: 60,
+      },
+      {
+        name: 'cat2-m',
+        x: 6,
+        y: 44,
+        r: 160,
+      },
+      {
+        name: 'cat3-m',
+        x: 86,
+        y: 84,
+        r: 60,
+      }
+    );
 
     return collection;
   }
@@ -335,6 +377,12 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
     if (zoomType == 'zoom in') {
     	vis.colorTarget(vis.nameHovered)
     }
+
+    // category color target
+    this.colorTarget('cat0-m');
+    this.colorTarget('cat1-m');
+    this.colorTarget('cat2-m');
+    this.colorTarget('cat3-m');
   }
 
 }

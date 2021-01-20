@@ -1,5 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {LeapEventsService} from "../leap-events.service";
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-scatter-view-pan',
@@ -70,6 +71,12 @@ export class ScatterViewPanComponent implements OnInit {
     this.data = this.getData();
   }
 
+  ngAfterViewInit() {
+
+    // Color target
+    this.colorTarget();
+  }
+
   /**
    * addEvents
    */
@@ -78,6 +85,20 @@ export class ScatterViewPanComponent implements OnInit {
     // This vis
     const vis = this;
   }
+
+  /**
+   * colorTarget
+   */
+  colorTarget(): void {
+    this.child.els.bubblesG.selectAll('circle')
+      .each(function(d, i) {
+        if (d.name === 'Badubada') {
+          d3.select(this)
+            .attr('fill', 'rgba(255, 0, 0, 1)')
+        }
+      })
+  }
+
 
   /**
    * getData
@@ -98,6 +119,21 @@ export class ScatterViewPanComponent implements OnInit {
         });
       }
     }
+
+    collection.push(
+      {
+        name: 'Badubada',
+        x: 56,
+        y: 54,
+        r: 100,
+      },
+      {
+        name: 'Badubada',
+        x: 76,
+        y: 74,
+        r: 60,
+      }
+    );
 
     return collection;
   }
@@ -147,8 +183,11 @@ export class ScatterViewPanComponent implements OnInit {
     // Grab status
     const handState = vis.leapEventsService.getHandStateFromHistory(frame, vis.controller, 10);
 
+    // swipe direction
+    const swipeDirection = vis.leapEventsService.getSwipeDirection(frame);
+
     // Trigger Grab
-    vis.manageGrab(handState, pointerDirection)
+    vis.manageGrab(handState, pointerDirection, swipeDirection)
 
   }
 
@@ -162,16 +201,18 @@ export class ScatterViewPanComponent implements OnInit {
   /**
   *
   */
-  manageGrab(gesture, direction): void {
+  manageGrab(gesture, direction, swipeDirection): void {
+
+    let xDomain = [];
+    let yDomain = [];
+
+    const config = this.dataConfigs;
+    const offset = this.configs.offset;
+
 
     if (gesture === 'closed') {
 
       this.modes.grab = true;
-      let xDomain = [];
-      let yDomain = [];
-
-      const config = this.dataConfigs;
-      const offset = this.configs.offset;
 
       if (direction === 'left direction') { 
 
@@ -190,8 +231,26 @@ export class ScatterViewPanComponent implements OnInit {
 
       this.modes.grab = false;
       
-      this.defaultElements();
+      // this.defaultElements();
     }
+
+
+    if (swipeDirection === 'right direction') { 
+
+      xDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
+      yDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
+
+      this.moveElements(xDomain, yDomain);
+
+    } else if (swipeDirection === 'left direction') { 
+
+      xDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
+      yDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
+
+      this.moveElements(xDomain, yDomain);
+    }
+
+
   }
 
   /**
@@ -203,7 +262,7 @@ export class ScatterViewPanComponent implements OnInit {
     this.child.tools.scX.domain(xDomain);
     this.child.tools.scY.domain(yDomain);
 
-    this.child.tools.scR.range([0, 25]);
+    // this.child.tools.scR.range([0, 25]);
 
     this.child.wrangle();
   }

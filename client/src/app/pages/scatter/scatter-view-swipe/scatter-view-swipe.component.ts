@@ -163,26 +163,26 @@ export class ScatterViewSwipeComponent implements OnInit {
   */
   manageSwipe(direction): void {
 
-  	let xDomain = [];
+    let xDomain = [];
     let yDomain = [];
 
-	const config = this.dataConfigs;
-	const offset = this.configs.offset;
+  	const config = this.dataConfigs;
+  	const offset = this.configs.offset;
 
-	if (direction === 'left direction') { 
+  	if (direction === 'left direction') { 
 
-        xDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
-        yDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
+      xDomain = [config.inputX[0] - offset, config.inputX[1] - offset];
+      yDomain = [config.inputY[0] - offset, config.inputY[1] - offset];
 
-        this.moveElements(xDomain, yDomain);
+      this.moveElements(xDomain, yDomain);
 
-	} else if (direction === 'right direction') { 
+  	} else if (direction === 'right direction') { 
 
-		xDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
-		yDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
+  		xDomain = [config.inputX[0] + offset, config.inputX[1] + offset];
+  		yDomain = [config.inputY[0] + offset, config.inputY[1] + offset];
 
-		this.moveElements(xDomain, yDomain);
-	}
+  		this.moveElements(xDomain, yDomain);
+  	}
   }
 
   /**
