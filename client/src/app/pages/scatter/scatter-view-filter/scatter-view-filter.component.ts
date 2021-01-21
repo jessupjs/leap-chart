@@ -115,14 +115,7 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     // category color target
-    this.colorTarget('cat0-m');
-    this.colorTarget('cat1-m');
-    this.colorTarget('cat2-m');
-    this.colorTarget('cat3-m');
-    this.colorTarget('cat4-m');
-    this.colorTarget('cat5-m');
-    this.colorTarget('cat6-m');
-    this.colorTarget('cat7-m');
+    this.addmarker();
   }
 
   /**
@@ -393,39 +386,9 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
 
       // Iterate bubbles
       // Fixme - need to label bubbles by grid
-      /* vis.child.els.bubblesG.selectAll('.bubble')
-        .each(function(d) {
-          d3.select(this).attr('fill', d => {
-            // if (vis.nameSelected === d.name) {
-              // return 'rgb(255, 0, 0)';
-            // }
-            // if (vis.searchableNames.includes(d.name)) {
-              const x = d3.select(this).attr('cx');
-              const y = d3.select(this).attr('cy');
-              const r = d3.select(this).attr('r');
-              // const dist = Math.sqrt((handSphere[0] - x) ** 2 + (handSphere[1] - y) ** 2);
-              if ((handSphere[0] + handSphere[2] * 40) < x && x > (handSphere[0] - handSphere[2] * 40)
-              	&& (handSphere[1] + handSphere[2] * 40) < y && y > (handSphere[1] - handSphere[2] * 40)
-              ) { 
-
-              // if (dist <= r) {
-                // vis.nameHovered = d.name;
-                return 'rgb(255,200,0)';
-              // }
-            } else {
-              return 'rgb(0, 0, 0)';
-            }
-          })
-        }) */
-
-        // Iterate bubbles
-      // Fixme - need to label bubbles by grid
       vis.child.els.bubblesG.selectAll('.bubble')
         .each(function(d) {
           d3.select(this).attr('fill', d => {
-            // if (vis.nameSelected === d.name) {
-              // return 'rgb(255, 0, 0)';
-            // }
             if (vis.searchableNames.includes(d.name)) {
               const x = d3.select(this).attr('cx');
               const y = d3.select(this).attr('cy');
@@ -433,11 +396,8 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
               const dist = Math.sqrt((indexFinger.x - x) ** 2 + (indexFinger.y - y) ** 2);
               if (dist <= r) {
                 vis.nameHovered = d.name;
-                // return 'rgb(255,200,0)';
               }
-            } else {
-              // return 'rgb(0, 0, 0)';
-            }
+            } 
           })
         })
 
@@ -445,16 +405,26 @@ export class ScatterViewFilterComponent implements OnInit, AfterViewInit {
 
         vis.colorTarget(vis.nameHovered)
 
-        vis.colorTarget('cat0-m');
-	    vis.colorTarget('cat1-m');
-	    vis.colorTarget('cat2-m');
-	    vis.colorTarget('cat3-m');
-	    vis.colorTarget('cat4-m');
-	    vis.colorTarget('cat5-m');
-	    vis.colorTarget('cat6-m');
-	    vis.colorTarget('cat7-m');
+        // category color target
+	    vis.addmarker();
 
     }
+  }
+
+  /**
+  * Add markers
+  */
+  addmarker(): void {
+
+    this.colorTarget('cat0-m');
+    this.colorTarget('cat1-m');
+    this.colorTarget('cat2-m');
+    this.colorTarget('cat3-m');
+    this.colorTarget('cat4-m');
+    this.colorTarget('cat5-m');
+    this.colorTarget('cat6-m');
+    this.colorTarget('cat7-m');
+
   }
 
 }

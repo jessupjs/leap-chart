@@ -103,6 +103,8 @@ export class ScatterViewBrushComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+
+    this.addmarker();
   }
 
   /**
@@ -304,7 +306,7 @@ export class ScatterViewBrushComponent implements OnInit {
       const fingerCoords = vis.leapEventsService.getScaledFingersCoords(frame, vis.scalesetG);
       const indexFinger = fingerCoords.find(f => f.name === 'Index');
 
-      // Update finger circs / pointers
+      // Update finger circls / pointers
       vis.leapEventsService.updateContainerPointers(fingerCoords, vis.child.els.pointersG);
 
 
@@ -358,12 +360,21 @@ export class ScatterViewBrushComponent implements OnInit {
     }
 
     // category color target
+    this.addmarker();
+
+    this.colorTarget(vis.nameHovered, '.bubble-select');
+  }
+
+  /**
+  * Add markers
+  */
+  addmarker(): void {
+
     this.colorTarget('cat0-m', '.bubble');
     this.colorTarget('cat1-m', '.bubble');
     this.colorTarget('cat2-m', '.bubble');
     this.colorTarget('cat3-m', '.bubble');
 
-    this.colorTarget(vis.nameHovered, '.bubble-select');
   }
 
 }

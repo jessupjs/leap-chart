@@ -106,10 +106,10 @@ export class ScatterViewPanZAxisComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     // Color target
-    // this.colorTarget('cat0-m');
-    // this.colorTarget('cat1-m');
-    // this.colorTarget('cat2-m');
-    // this.colorTarget('cat3-m');
+    this.colorTarget('cat0-m');
+    this.colorTarget('cat1-m');
+    this.colorTarget('cat2-m');
+    this.colorTarget('cat3-m');
   }
 
   /**

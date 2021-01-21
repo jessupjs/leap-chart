@@ -149,6 +149,7 @@ export class ScatterPlotComponent implements OnInit {
       .attr('r', d => vis.tools.scR(d.r))
       .attr('cx', d => vis.tools.scX(d.x))
       .attr('cy', d => vis.tools.scY(d.y))
+      .attr('fill', (d) => d.fill)
       .attr('opacity', 0.75);
 
     // Update axes
