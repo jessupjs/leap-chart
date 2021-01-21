@@ -207,7 +207,7 @@ export class ScatterViewBrushComponent implements OnInit {
           name: cat,
           x: Math.random() * w + (pos[0] - range[0]),
           y: Math.random() * h + (pos[1] - range[1]),
-          r: Math.random() * 30 * vis.dataConfigs.inputR[1],
+          r: Math.random() * 10 * vis.dataConfigs.inputR[1],
         }
         const passedTest = ((obj.x - pos[0]) ** 2 / range[0] ** 2) + ((obj.y - pos[1]) ** 2 / range[1] ** 2) <= 1;
         if (passedTest) {
